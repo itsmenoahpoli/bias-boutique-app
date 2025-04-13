@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import type { TStackParamsList } from "@/types/navigation";
+import { type TStackParamsList } from "@/types/navigation";
 
 import { WelcomeScreen, HomeScreen } from "@/screens";
 

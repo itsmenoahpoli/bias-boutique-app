@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import type { TStackParamsList } from "@/types/navigation";
+import { type TStackParamsList } from "@/types/navigation";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "WELCOME_SCREEN">;
