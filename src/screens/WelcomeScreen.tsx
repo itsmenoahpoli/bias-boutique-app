@@ -1,6 +1,8 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Image, ActivityIndicator } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { GradientLayout } from "@/components";
+import { BRAND_LOGO } from "@/images";
 import { type TStackParamsList } from "@/types/navigation";
 
 type TScreenProps = {
@@ -8,16 +10,29 @@ type TScreenProps = {
 };
 
 export const WelcomeScreen: React.FC<TScreenProps> = (props) => {
-  const handleNavigate = () => {
-    props.navigation.navigate("HOME_SCREEN");
-  };
+  React.useEffect(() => {
+    setTimeout(() => {
+      props.navigation.replace("LOGIN_SCREEN");
+    }, 3000);
+  }, []);
 
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-gray-500 font-bold">Welcome Screen</Text>
-      <Pressable className="mt-5" onPress={handleNavigate}>
-        <Text className="text-blue-700 underline">Go to home</Text>
-      </Pressable>
-    </View>
+    <GradientLayout>
+      <View className="flex-1 justify-center items-center">
+        <View className="flex flex-col gap-y-1">
+          <Image
+            source={BRAND_LOGO}
+            className="w-32 h-32 mx-auto"
+            resizeMethod="scale"
+            resizeMode="contain"
+          />
+          <Text className="text-xl text-white font-bold mb-5">
+            BIAS BOUTIQUE
+          </Text>
+
+          <ActivityIndicator size="large" />
+        </View>
+      </View>
+    </GradientLayout>
   );
 };

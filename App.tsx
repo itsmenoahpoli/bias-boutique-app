@@ -1,12 +1,12 @@
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import { AppNavigation } from "@/navigation";
 
 const App: React.FC = () => {
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1">
-        <AppNavigation />
-      </SafeAreaView>
+      <StatusBar style="light" />
+      <AppNavigation />
     </SafeAreaProvider>
   );
 };
