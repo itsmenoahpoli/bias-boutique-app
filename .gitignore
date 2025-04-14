@@ -1,1 +1,6 @@
+# .easignore
 node_modules
+.expo
+.vscode
+*.log
+*.env
