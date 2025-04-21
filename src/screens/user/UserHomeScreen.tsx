@@ -44,6 +44,8 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const handleRedirect = (page: string) => {
     switch (page) {
       case "shopping-cart":
+        navigation.navigate("CART_SCREEN");
+        break;
       case "orders":
       case "mainhome":
       case "wallet":

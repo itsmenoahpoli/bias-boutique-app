@@ -1,10 +1,18 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
-import { ArrowLeft } from "lucide-react-native";
+import { ArrowLeft, ShoppingCart } from "lucide-react-native";
 import { PRODUCT_PLACEHOLDER } from "@/images";
+import { useCartStore } from "@/store/cart.store";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "CLOTHING_SCREEN">;

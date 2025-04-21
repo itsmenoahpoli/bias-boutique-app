@@ -15,49 +15,26 @@ import { PRODUCT_PLACEHOLDER } from "@/images";
 import { useCartStore } from "@/store/cart.store";
 
 type TScreenProps = {
-  navigation: StackNavigationProp<TStackParamsList, "LIGHTSTICKS_SCREEN">;
+  navigation: StackNavigationProp<TStackParamsList, "CLOTHING_SCREEN">;
 };
 
 const products = [
   {
     id: 1,
-    name: "BTS Army Bomb",
-    price: "₱2,500",
+    name: "K-Pop T-Shirt",
+    price: "₱850",
     image: PRODUCT_PLACEHOLDER,
   },
   {
     id: 2,
-    name: "Blackpink Lightstick",
-    price: "₱2,300",
+    name: "Fan Hoodie",
+    price: "₱1500",
     image: PRODUCT_PLACEHOLDER,
   },
-  {
-    id: 3,
-    name: "EXO Lightstick",
-    price: "₱2,200",
-    image: PRODUCT_PLACEHOLDER,
-  },
-  {
-    id: 4,
-    name: "TWICE Candybong",
-    price: "₱2,400",
-    image: PRODUCT_PLACEHOLDER,
-  },
-  {
-    id: 5,
-    name: "Red Velvet Lightstick",
-    price: "₱2,300",
-    image: PRODUCT_PLACEHOLDER,
-  },
-  {
-    id: 6,
-    name: "NCT Lightstick",
-    price: "₱2,400",
-    image: PRODUCT_PLACEHOLDER,
-  },
+  // Add more clothing products as needed
 ];
 
-export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
+export const ClothingScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const { addToCart, items, loadCart } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -103,7 +80,7 @@ export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
             <ArrowLeft size={24} color="white" />
           </TouchableOpacity>
           <Text className="flex-1 text-center text-white text-xl font-bold mr-9">
-            Lightsticks
+            Clothing
           </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate("CART_SCREEN")}

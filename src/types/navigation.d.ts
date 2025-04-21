@@ -12,4 +12,8 @@ export type TStackParamsList = {
   LIGHTSTICKS_SCREEN: undefined;
   PHOTOCARDS_SCREEN: undefined;
   STATIONARIES_SCREEN: undefined;
+  CART_SCREEN: undefined;
+  CHECKOUT_WEBVIEW: {
+    url: string;
+  };
 };

@@ -1,10 +1,18 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
-import { ArrowLeft } from "lucide-react-native";
+import { ArrowLeft, ShoppingCart } from "lucide-react-native";
 import { PRODUCT_PLACEHOLDER } from "@/images";
+import { useCartStore } from "@/store/cart.store";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "BEAUTY_PRODUCTS_SCREEN">;
@@ -52,6 +60,45 @@ const products = [
 export const BeautyProductsScreen: React.FC<TScreenProps> = ({
   navigation,
 }) => {
+  const { addToCart, items, loadCart } = useCartStore();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    loadCart();
+  }, []);
+
+  const handleAddToCart = async (product: (typeof products)[0]) => {
+    setIsLoading(true);
+    try {
+      await addToCart(product);
+      Alert.alert(
+        "Added to Cart!",
+        `${product.name} has been added to your cart`,
+        [
+          {
+            text: "Continue Shopping",
+            onPress: () => {},
+            style: "cancel",
+          },
+          {
+            text: "View Cart",
+            onPress: () => navigation.navigate("CART_SCREEN"),
+          },
+        ]
+      );
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "There was a problem adding this item to your cart",
+        [{ text: "OK" }]
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <GradientLayout>
       {/* Header */}
@@ -63,6 +110,17 @@ export const BeautyProductsScreen: React.FC<TScreenProps> = ({
           <Text className="flex-1 text-center text-white text-xl font-bold mr-9">
             Beauty Products
           </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("CART_SCREEN")}
+            className="relative p-2"
+          >
+            <ShoppingCart size={24} color="white" />
+            {cartItemCount > 0 && (
+              <View className="absolute -top-1 -right-1 bg-red-500 rounded-full w-5 h-5 items-center justify-center">
+                <Text className="text-white text-xs">{cartItemCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -73,7 +131,7 @@ export const BeautyProductsScreen: React.FC<TScreenProps> = ({
             <TouchableOpacity
               key={product.id}
               className="w-[48%] bg-white/10 rounded-xl mb-4 overflow-hidden"
-              onPress={() => {}}
+              onPress={() => handleAddToCart(product)}
             >
               <Image
                 source={product.image}
@@ -88,7 +146,6 @@ export const BeautyProductsScreen: React.FC<TScreenProps> = ({
           ))}
         </View>
 
-        {/* Add padding at the bottom for better scrolling experience */}
         <View className="h-20" />
       </ScrollView>
     </GradientLayout>

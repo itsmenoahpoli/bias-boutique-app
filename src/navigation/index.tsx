@@ -17,6 +17,8 @@ import {
   LightsticksScreen,
   PhotocardsScreen,
   StationariesScreen,
+  CartScreen,
+  CheckoutWebViewScreen,
 } from "@/screens";
 
 const { Navigator, Screen } = createStackNavigator<TStackParamsList>();
@@ -41,8 +43,10 @@ export const AppNavigation: React.FC = () => {
         {/* User screens */}
         <Screen name="PRICINGPLAN_SCREEN" component={PricingPlanScreen} />
         <Screen name="USERHOME_SCREEN" component={UserHomeScreen} />
+        <Screen name="CART_SCREEN" component={CartScreen} />
 
         {/* Shop screens */}
+        <Screen name="CHECKOUT_WEBVIEW" component={CheckoutWebViewScreen} />
         <Screen name="ACCESSORIES_SCREEN" component={AccessoriesScreen} />
         <Screen name="ALBUMS_SCREEN" component={AlbumsScreen} />
         <Screen
