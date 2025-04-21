@@ -13,7 +13,7 @@ export const WelcomeScreen: React.FC<TScreenProps> = (props) => {
   React.useEffect(() => {
     setTimeout(() => {
       props.navigation.replace("LOGIN_SCREEN");
-    }, 3000);
+    }, 2500);
   }, []);
 
   return (
