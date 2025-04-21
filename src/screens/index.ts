@@ -11,6 +11,7 @@ export { SignupScreen } from "@/screens/auth/SignupScreen";
  */
 export { PricingPlanScreen } from "@/screens/user/PricingPlanScreen";
 export { UserHomeScreen } from "@/screens/user/UserHomeScreen";
+export { UserHome2Screen } from "@/screens/user/UserHome2Screen";
 export { CartScreen } from "@/screens/user/CartScreen";
 
 /**

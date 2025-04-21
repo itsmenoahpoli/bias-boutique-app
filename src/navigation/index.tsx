@@ -9,6 +9,7 @@ import {
   SignupScreen,
   PricingPlanScreen,
   UserHomeScreen,
+  UserHome2Screen,
   AccessoriesScreen,
   AlbumsScreen,
   BeautyProductsScreen,
@@ -43,6 +44,7 @@ export const AppNavigation: React.FC = () => {
         {/* User screens */}
         <Screen name="PRICINGPLAN_SCREEN" component={PricingPlanScreen} />
         <Screen name="USERHOME_SCREEN" component={UserHomeScreen} />
+        <Screen name="USERHOME2_SCREEN" component={UserHome2Screen} />
         <Screen name="CART_SCREEN" component={CartScreen} />
 
         {/* Shop screens */}

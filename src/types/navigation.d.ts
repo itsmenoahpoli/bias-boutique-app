@@ -4,6 +4,7 @@ export type TStackParamsList = {
   SIGNUP_SCREEN: undefined;
   PRICINGPLAN_SCREEN: undefined;
   USERHOME_SCREEN: undefined;
+  USERHOME2_SCREEN: undefined;
   ACCESSORIES_SCREEN: undefined;
   ALBUMS_SCREEN: undefined;
   BEAUTY_PRODUCTS_SCREEN: undefined;

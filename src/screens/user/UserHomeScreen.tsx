@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ShoppingCart, ClipboardList, Wallet, User } from "lucide-react-native";
@@ -25,6 +27,10 @@ import {
 } from "lucide-react-native";
 import { BRAND_LOGO } from "@/images";
 
+type TScreenProps = {
+  navigation: StackNavigationProp<TStackParamsList, "USERHOME_SCREEN">;
+};
+
 const categories = [
   { label: "Albums", icon: Disc },
   { label: "Photocards", icon: ImageIcon },
@@ -36,104 +42,178 @@ const categories = [
   { label: "Home Goods", icon: Home },
 ];
 
-type TScreenProps = {
-  navigation: StackNavigationProp<TStackParamsList, "USERHOME_SCREEN">;
-};
-
 export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
-  const handleRedirect = (page: string) => {
-    switch (page) {
-      case "shopping-cart":
-        navigation.navigate("CART_SCREEN");
-        break;
-      case "orders":
-      case "mainhome":
-      case "wallet":
-      case "profile":
-        console.log(page); // Keep the console.log for non-implemented routes
-        break;
-      default:
-        break;
-    }
-  };
+  // Add error handling for rendering
+  const [hasError, setHasError] = useState(false);
 
-  const handleCategoryPress = (category: string) => {
-    switch (category) {
-      case "Albums":
-        navigation.navigate("ALBUMS_SCREEN");
-        break;
-      case "Photocards":
-        navigation.navigate("PHOTOCARDS_SCREEN");
-        break;
-      case "Lightsticks":
-        navigation.navigate("LIGHTSTICKS_SCREEN");
-        break;
-      case "Clothing":
-        navigation.navigate("CLOTHING_SCREEN");
-        break;
-      case "Accessories":
-        navigation.navigate("ACCESSORIES_SCREEN");
-        break;
-      case "Stationary":
-        navigation.navigate("STATIONARIES_SCREEN");
-        break;
-      case "Beauty Products":
-        navigation.navigate("BEAUTY_PRODUCTS_SCREEN");
-        break;
-      case "Home Goods":
-        navigation.navigate("HOME_GOODS_SCREEN");
-        break;
-      default:
-        break;
+  useEffect(() => {
+    if (hasError) {
+      // Reset error state after a delay
+      const timer = setTimeout(() => setHasError(false), 2000);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [hasError]);
+
+  if (hasError) {
+    return (
+      <GradientLayout>
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-white text-lg">Something went wrong</Text>
+          <TouchableOpacity
+            onPress={() => setHasError(false)}
+            className="mt-4 bg-white/20 px-4 py-2 rounded-lg"
+          >
+            <Text className="text-white">Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      </GradientLayout>
+    );
+  }
+
+  const handleRedirect = useCallback(
+    (page: string) => {
+      try {
+        switch (page) {
+          case "shopping-cart":
+            navigation.navigate("CART_SCREEN");
+            break;
+          case "orders":
+            // For now, do nothing until Orders is implemented
+            break;
+          case "mainhome":
+            // For now, do nothing until Main Home is implemented
+            break;
+          case "wallet":
+            // For now, do nothing until Wallet is implemented
+            break;
+          case "profile":
+            // For now, do nothing until Profile is implemented
+            break;
+        }
+      } catch (error) {
+        console.warn("Navigation error:", error);
+      }
+    },
+    [navigation]
+  );
+
+  const handleCategoryPress = useCallback(
+    (category: string) => {
+      try {
+        switch (category) {
+          case "Albums":
+            navigation.navigate("ALBUMS_SCREEN");
+            break;
+          case "Photocards":
+            navigation.navigate("PHOTOCARDS_SCREEN");
+            break;
+          case "Lightsticks":
+            navigation.navigate("LIGHTSTICKS_SCREEN");
+            break;
+          case "Clothing":
+            navigation.navigate("CLOTHING_SCREEN");
+            break;
+          case "Accessories":
+            navigation.navigate("ACCESSORIES_SCREEN");
+            break;
+          case "Stationary":
+            navigation.navigate("STATIONARIES_SCREEN");
+            break;
+          case "Beauty Products":
+            navigation.navigate("BEAUTY_PRODUCTS_SCREEN");
+            break;
+          case "Home Goods":
+            navigation.navigate("HOME_GOODS_SCREEN");
+            break;
+        }
+      } catch (error) {
+        console.warn("Category navigation error:", error);
+      }
+    },
+    [navigation]
+  );
+
+  const renderCategories = useMemo(() => {
+    return categories.map((item, index) => {
+      const IconComponent = item.icon;
+      return (
+        <TouchableOpacity
+          key={index}
+          className="w-[22%] items-center my-8"
+          onPress={() => handleCategoryPress(item.label)}
+        >
+          <LinearGradient
+            colors={["#4c1d95", "#2e1065"]}
+            className="w-12 h-12 rounded-full items-center justify-center mb-2"
+          >
+            <IconComponent size={24} color="white" />
+          </LinearGradient>
+          <Text className="text-white text-xs text-center">{item.label}</Text>
+        </TouchableOpacity>
+      );
+    });
+  }, [handleCategoryPress]);
 
   return (
     <GradientLayout>
-      <View className="px-4 pt-10 pb-4 relative">
-        {/* Header */}
-        <View className="flex-row items-center justify-between mb-4">
-          <View>
-            <Text className="text-white text-lg">Good Morning 👋</Text>
-            <Text className="text-white font-bold text-xl">Juan Dela Cruz</Text>
-          </View>
-          <View className="flex-row space-x-3">
-            <Ionicons name="notifications-outline" size={24} color="white" />
-            <MaterialIcons name="favorite-border" size={24} color="white" />
-            <Ionicons name="settings-outline" size={24} color="white" />
-          </View>
-        </View>
-
-        {/* Search */}
-        <View className="bg-white/20 rounded-xl p-3 flex-row items-center mb-4">
-          <Ionicons name="search" size={20} color="white" className="mr-2" />
-          <TextInput
-            placeholder="Search"
-            placeholderTextColor="white"
-            className="flex-1 text-white"
-          />
-          <Ionicons name="options-outline" size={20} color="white" />
-        </View>
-
-        {/* Special Offers */}
-        <View className="mb-4">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-white font-bold text-lg">Special Offers</Text>
-            <Text className="text-blue-300">See All</Text>
-          </View>
-          <View className="bg-purple-500 rounded-2xl p-4 flex-row items-center justify-between">
+      <SafeAreaView style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: 16,
+            paddingTop: Platform.OS === "android" ? 40 : 10,
+            paddingBottom: 16,
+            position: "relative",
+          }}
+        >
+          {/* Header */}
+          <View className="flex-row items-center justify-between mb-4">
             <View>
-              <Text className="text-white font-bold text-xl">11.11</Text>
-              <Text className="text-white text-sm">Free Shipping Special</Text>
-              <Text className="text-white text-xs mt-1">
-                Get a free shipping for every checkout. Only valid until 11-15
+              <Text className="text-white text-lg">Good Morning 👋</Text>
+              <Text className="text-white font-bold text-xl">
+                Juan Dela Cruz
               </Text>
             </View>
+            <View className="flex-row space-x-3">
+              <Ionicons name="notifications-outline" size={24} color="white" />
+              <MaterialIcons name="favorite-border" size={24} color="white" />
+              <Ionicons name="settings-outline" size={24} color="white" />
+            </View>
           </View>
-        </View>
 
-        {/* Categories */}
-        <View>
+          {/* Search */}
+          <View className="bg-white/20 rounded-xl p-3 flex-row items-center mb-4">
+            <Ionicons name="search" size={20} color="white" className="mr-2" />
+            <TextInput
+              placeholder="Search"
+              placeholderTextColor="white"
+              className="flex-1 text-white"
+            />
+            <Ionicons name="options-outline" size={20} color="white" />
+          </View>
+
+          {/* Special Offers */}
+          <View className="mb-4">
+            <View className="flex-row justify-between items-center mb-2">
+              <Text className="text-white font-bold text-lg">
+                Special Offers
+              </Text>
+              <Text className="text-blue-300">See All</Text>
+            </View>
+            <View className="bg-purple-500 rounded-2xl p-4">
+              <View>
+                <Text className="text-white font-bold text-xl">11.11</Text>
+                <Text className="text-white text-sm">
+                  Free Shipping Special
+                </Text>
+                <Text className="text-white text-xs mt-1">
+                  Get a free shipping for every checkout. Only valid until 11-15
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Categories */}
           <ScrollView
             contentContainerStyle={{
               flexDirection: "row",
@@ -143,79 +223,74 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
             }}
             showsVerticalScrollIndicator={false}
           >
-            {categories.map((item, index) => {
-              const IconComponent = item.icon;
-              return (
-                <TouchableOpacity
-                  key={index}
-                  className="w-[22%] items-center my-8"
-                  onPress={() => handleCategoryPress(item.label)}
-                >
-                  <LinearGradient
-                    colors={["#4c1d95", "#2e1065"]}
-                    className="w-12 h-12 rounded-full items-center justify-center mb-2"
-                  >
-                    <IconComponent size={24} color="white" />
-                  </LinearGradient>
-                  <Text className="text-white text-xs text-center">
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+            {renderCategories}
           </ScrollView>
         </View>
-      </View>
 
-      {/* Bottom Navigation (Placeholder) */}
-      <View className="absolute bottom-5 left-0 right-0 flex-row justify-around items-center bg-white/60 py-1 rounded-full mx-4">
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => handleRedirect("shopping-cart")}
+        {/* Bottom Navigation */}
+        <View
+          style={{
+            position: "absolute",
+            bottom: Platform.OS === "android" ? 20 : 5,
+            left: 0,
+            right: 0,
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            paddingVertical: 4,
+            borderRadius: 9999,
+            marginHorizontal: 16,
+          }}
         >
-          <ShoppingCart color="white" size={24} />
-          <Text className="text-white text-sm">Cart</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className="items-center"
+            onPress={() => handleRedirect("shopping-cart")}
+          >
+            <ShoppingCart color="white" size={24} />
+            <Text className="text-white text-sm">Cart</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => handleRedirect("orders")}
-        >
-          <ClipboardList color="white" size={24} />
-          <Text className="text-white text-sm">Orders</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className="items-center"
+            onPress={() => handleRedirect("orders")}
+          >
+            <ClipboardList color="white" size={24} />
+            <Text className="text-white text-sm">Orders</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => handleRedirect("mainhome")}
-        >
-          <View className="items-center justify-center">
-            <Image
-              className="w-16 h-16"
-              source={BRAND_LOGO}
-              resizeMethod="resize"
-              resizeMode="contain"
-              defaultSource={BRAND_LOGO}
-            />
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className="items-center"
+            onPress={() => handleRedirect("mainhome")}
+          >
+            <View className="items-center justify-center">
+              <Image
+                style={{ width: 64, height: 64 }}
+                source={BRAND_LOGO}
+                resizeMethod="resize"
+                resizeMode="contain"
+                defaultSource={BRAND_LOGO}
+              />
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => handleRedirect("wallet")}
-        >
-          <Wallet color="white" size={24} />
-          <Text className="text-white text-sm">Wallet</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className="items-center"
+            onPress={() => handleRedirect("wallet")}
+          >
+            <Wallet color="white" size={24} />
+            <Text className="text-white text-sm">Wallet</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className="items-center"
-          onPress={() => handleRedirect("profile")}
-        >
-          <User color="white" size={24} />
-          <Text className="text-white text-sm">Profile</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            className="items-center"
+            onPress={() => handleRedirect("profile")}
+          >
+            <User color="white" size={24} />
+            <Text className="text-white text-sm">Profile</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </GradientLayout>
   );
 };
