@@ -11,8 +11,10 @@ export { SignupScreen } from "@/screens/auth/SignupScreen";
  */
 export { PricingPlanScreen } from "@/screens/user/PricingPlanScreen";
 export { UserHomeScreen } from "@/screens/user/UserHomeScreen";
-export { UserHome2Screen } from "@/screens/user/UserHome2Screen";
 export { CartScreen } from "@/screens/user/CartScreen";
+export { OrdersScreen } from "@/screens/user/OrdersScreen";
+export { WalletScreen } from "@/screens/user/WalletScreen";
+export { ProfileScreen } from "@/screens/user/ProfileScreen";
 
 /**
  * Shop screens

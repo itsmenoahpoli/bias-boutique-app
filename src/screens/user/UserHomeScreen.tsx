@@ -78,16 +78,16 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
             navigation.navigate("CART_SCREEN");
             break;
           case "orders":
-            // For now, do nothing until Orders is implemented
+            navigation.navigate("ORDERS_SCREEN");
             break;
           case "mainhome":
             // For now, do nothing until Main Home is implemented
             break;
           case "wallet":
-            // For now, do nothing until Wallet is implemented
+            navigation.navigate("WALLET_SCREEN");
             break;
           case "profile":
-            // For now, do nothing until Profile is implemented
+            navigation.navigate("PROFILE_SCREEN");
             break;
         }
       } catch (error) {
