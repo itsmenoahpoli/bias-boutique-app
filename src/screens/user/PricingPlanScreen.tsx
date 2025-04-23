@@ -27,7 +27,7 @@ export const PricingPlanScreen: React.FC<TScreenProps> = (props) => {
   const [selectedPlan, setSelectedPlan] = React.useState<string | null>("free");
 
   const handleRedirectToHome = () => {
-    props.navigation.replace("USERHOME2_SCREEN");
+    props.navigation.replace("USERHOME_SCREEN");
   };
 
   return (
