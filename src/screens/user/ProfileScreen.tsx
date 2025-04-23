@@ -14,7 +14,7 @@ const iconList = [
   { label: "To Ship", icon: "cube" },
   { label: "To Receive", icon: "car" },
   { label: "To Review", icon: "chatbubble-ellipses" },
-  { label: "Returns & Cancellations", icon: "refresh" },
+  { label: "Returns/Cancels", icon: "refresh" },
 ];
 
 const menuList = [
@@ -26,10 +26,18 @@ const menuList = [
   { label: "Chat Assistant", icon: "chatbubbles" },
 ];
 
-export const ProfileScreen: React.FC<TScreenProps> = () => {
+export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
   return (
     <GradientLayout>
       <ScrollView className="flex-1 px-4 py-6">
+        {/* Back Button */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("USERHOME_SCREEN")}
+          className="absolute left-4 top-6 z-10"
+        >
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+
         {/* User Info */}
         <View className="items-center">
           <Image
