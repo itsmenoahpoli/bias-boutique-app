@@ -8,6 +8,15 @@ export type TStackParamsList = {
   ORDERS_SCREEN: undefined;
   WALLET_SCREEN: undefined;
   PROFILE_SCREEN: undefined;
+  VIEW_PRODUCT_DETAIL_SCREEN: {
+    product: {
+      id: number;
+      name: string;
+      price: string;
+      image: any;
+      description?: string;
+    };
+  };
   ACCESSORIES_SCREEN: undefined;
   ALBUMS_SCREEN: undefined;
   BEAUTY_PRODUCTS_SCREEN: undefined;

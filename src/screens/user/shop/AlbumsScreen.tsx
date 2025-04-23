@@ -127,7 +127,9 @@ export const AlbumsScreen: React.FC<TScreenProps> = ({ navigation }) => {
             <TouchableOpacity
               key={product.id}
               className="w-[48%] bg-white/10 rounded-xl mb-4 overflow-hidden"
-              onPress={() => handleAddToCart(product)}
+              onPress={() =>
+                navigation.navigate("VIEW_PRODUCT_DETAIL_SCREEN", { product })
+              }
             >
               <Image
                 source={product.image}

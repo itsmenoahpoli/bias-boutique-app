@@ -19,6 +19,7 @@ export { ProfileScreen } from "@/screens/user/ProfileScreen";
 /**
  * Shop screens
  */
+export { ViewProductDetailScreen } from "@/screens/user/shop/ViewProductDetailScreen";
 export { CheckoutWebViewScreen } from "@/screens/user/CheckoutWebViewScreen";
 export { AccessoriesScreen } from "@/screens/user/shop/AccessoriesScreen";
 export { AlbumsScreen } from "@/screens/user/shop/AlbumsScreen";
