@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
+  Alert,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
@@ -16,6 +17,7 @@ import { TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "@/store/cart.store";
 import { useNavigation } from "@react-navigation/native";
+import { useOrdersService } from "@/services";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "CART_SCREEN">;
@@ -28,7 +30,9 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
     updateQuantity: updateCartQuantity,
     removeFromCart,
   } = useCartStore();
+  const ordersService = useOrdersService();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set()); // Changed from number to string
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   useEffect(() => {
     loadCart();
@@ -79,10 +83,15 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
       }, 0);
   };
 
-  const handleCheckout = () => {
-    navigation.navigate("CHECKOUT_WEBVIEW", {
-      url: "https://dev.xen.to/ctSE5yxG",
-    });
+  const handleCheckout = async () => {
+    setIsCheckoutLoading(true);
+    try {
+      await navigation.navigate("CHECKOUT_WEBVIEW", {
+        url: "https://dev.xen.to/ctSE5yxG",
+      });
+    } finally {
+      setIsCheckoutLoading(false);
+    }
   };
 
   return (
@@ -217,6 +226,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
               <Pressable
                 onPress={handleCheckout}
+                disabled={isCheckoutLoading}
                 className="bg-gradient-to-r from-purple-900 to-blue-900 px-6 py-3 rounded-lg transform scale-105"
                 style={{
                   shadowColor: "#8B5CF6",
@@ -224,10 +234,13 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   shadowOpacity: 0.3,
                   shadowRadius: 5,
                   elevation: 4,
+                  opacity: isCheckoutLoading ? 0.7 : 1,
                 }}
               >
                 <Text className="bg-white text-purple-900 font-bold text-base tracking-wide rounded-lg p-2">
-                  Checkout ({selectedItems.size})
+                  {isCheckoutLoading
+                    ? "Processing..."
+                    : `Checkout (${selectedItems.size})`}
                 </Text>
               </Pressable>
             </View>
