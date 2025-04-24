@@ -2,7 +2,7 @@ import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type CartItem = {
-  id: number;
+  id: string; // Changed to string for MongoDB IDs
   name: string;
   price: string;
   image: any;
@@ -12,8 +12,8 @@ export type CartItem = {
 type CartStore = {
   items: CartItem[];
   addToCart: (product: Omit<CartItem, "quantity">) => Promise<void>;
-  removeFromCart: (productId: number) => Promise<void>;
-  updateQuantity: (productId: number, quantity: number) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>; // Changed to string
+  updateQuantity: (productId: string, quantity: number) => Promise<void>; // Changed to string
   loadCart: () => Promise<void>;
 };
 
@@ -21,15 +21,18 @@ export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
 
   addToCart: async (product) => {
+    console.log(product);
     const currentItems = get().items;
     const existingItem = currentItems.find((item) => item.id === product.id);
 
     let newItems;
     if (existingItem) {
+      // If item exists, just update its quantity
       newItems = currentItems.map((item) =>
         item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
       );
     } else {
+      // If item doesn't exist, add it with quantity 1
       newItems = [...currentItems, { ...product, quantity: 1 }];
     }
 

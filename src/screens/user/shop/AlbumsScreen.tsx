@@ -61,7 +61,7 @@ export const AlbumsScreen: React.FC<TScreenProps> = ({ navigation }) => {
     setIsLoading(true);
     try {
       const cartItem = {
-        id: Number(product.id),
+        id: product.id,
         name: product.name,
         price: formatPrice(product.price),
         image: PRODUCT_PLACEHOLDER,

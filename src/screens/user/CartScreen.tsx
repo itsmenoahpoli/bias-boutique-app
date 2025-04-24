@@ -28,13 +28,14 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
     updateQuantity: updateCartQuantity,
     removeFromCart,
   } = useCartStore();
-  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set()); // Changed from number to string
 
   useEffect(() => {
     loadCart();
   }, []);
 
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
+    // Changed from number to string
     setSelectedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
@@ -46,7 +47,8 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
     });
   };
 
-  const updateQuantity = async (id: number, delta: number) => {
+  const updateQuantity = async (id: string, delta: number) => {
+    // Changed from number to string
     const item = items.find((item) => item.id === id);
     if (item) {
       const newQuantity = Math.max(1, item.quantity + delta);
@@ -107,7 +109,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
           {/* Scrollable Content */}
           <ScrollView
-            className="flex-1 px-4 space-y-4"
+            className="flex-1 flex-col px-4 space-y-4"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               paddingTop: 10,
@@ -121,9 +123,9 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
                 </Text>
               </View>
             ) : (
-              items.map((item) => (
+              items.map((item, index) => (
                 <View
-                  key={item.id}
+                  key={`${item.id}-${index}`} // Added index as fallback
                   className="flex-row bg-white/90 rounded-xl p-3 items-center"
                 >
                   <Pressable
@@ -144,7 +146,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   <View className="ml-4 flex-1">
                     <Text className="font-semibold text-sm">{item.name}</Text>
                     <Text className="text-black font-medium">
-                      ₱
                       {typeof item.price === "number"
                         ? // @ts-ignore
                           item.price.toLocaleString()
