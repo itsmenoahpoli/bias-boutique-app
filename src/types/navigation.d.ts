@@ -10,10 +10,10 @@ export type TStackParamsList = {
   PROFILE_SCREEN: undefined;
   VIEW_PRODUCT_DETAIL_SCREEN: {
     product: {
-      id: number;
+      id: number | string;
       name: string;
-      price: string;
-      image: any;
+      price: number;
+      image?: any;
       description?: string;
     };
   };

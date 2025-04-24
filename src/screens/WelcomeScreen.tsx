@@ -4,17 +4,24 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { BRAND_LOGO } from "@/images";
 import { type TStackParamsList } from "@/types/navigation";
+import { useUserStore } from "@/store/user.store";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "WELCOME_SCREEN">;
 };
 
 export const WelcomeScreen: React.FC<TScreenProps> = (props) => {
+  const user = useUserStore((state) => state.user);
+
   React.useEffect(() => {
     setTimeout(() => {
-      props.navigation.replace("LOGIN_SCREEN");
+      if (user) {
+        props.navigation.replace("USERHOME_SCREEN");
+      } else {
+        props.navigation.replace("LOGIN_SCREEN");
+      }
     }, 2500);
-  }, []);
+  }, [user]);
 
   return (
     <GradientLayout>
