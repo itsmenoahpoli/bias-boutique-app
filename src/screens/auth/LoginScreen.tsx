@@ -1,16 +1,43 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
+import { useAuthService } from "@/services/auth.service";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "LOGIN_SCREEN">;
 };
 
 export const LoginScreen: React.FC<TScreenProps> = (props) => {
-  const handleLogin = () => {
-    props.navigation.navigate("PRICINGPLAN_SCREEN");
+  const { loginUser } = useAuthService();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await loginUser({
+        email,
+        password,
+      });
+      props.navigation.replace("PRICINGPLAN_SCREEN");
+    } catch (error) {
+      Alert.alert(
+        "Login Failed",
+        error instanceof Error
+          ? error.message
+          : "An error occurred during login"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,36 +57,38 @@ export const LoginScreen: React.FC<TScreenProps> = (props) => {
           </View>
 
           <Text className="text-xs font-semibold text-gray-700 mb-1">
-            ENTER EMAIL OR USERNAME
+            EMAIL
           </Text>
           <TextInput
             className="border-b border-gray-400 mb-4 text-sm text-black pb-1"
             placeholder="you@example.com"
             placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
 
-          <View className="flex-row justify-between items-center">
-            <Text className="text-xs font-semibold text-gray-700 mb-1">
-              PASSWORD
-            </Text>
-            <TouchableOpacity>
-              <Text className="text-xs font-semibold text-blue-600">
-                FORGOT PASSWORD
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <Text className="text-xs font-semibold text-gray-700 mb-1">
+            PASSWORD
+          </Text>
           <TextInput
             className="border-b border-gray-400 mb-6 text-sm text-black pb-1"
             placeholder="••••••••"
             placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
             secureTextEntry
           />
 
           <TouchableOpacity
             className="w-full bg-blue-700 py-3 rounded-full mb-4"
             onPress={handleLogin}
+            disabled={isLoading}
           >
-            <Text className="text-white text-center font-bold">LOG IN</Text>
+            <Text className="text-white text-center font-bold">
+              {isLoading ? "LOGGING IN..." : "LOG IN"}
+            </Text>
           </TouchableOpacity>
 
           <View className="flex-row items-center my-2">

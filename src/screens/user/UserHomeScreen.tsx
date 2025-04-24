@@ -15,6 +15,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { TStackParamsList } from "@/types/navigation";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useUserStore } from "@/store/user.store";
 import {
   Disc,
   Image as ImageIcon,
@@ -45,6 +46,7 @@ const categories = [
 export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
   // Add error handling for rendering
   const [hasError, setHasError] = useState(false);
+  const user = useUserStore((state) => state.user);
 
   useEffect(() => {
     if (hasError) {
@@ -171,7 +173,7 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
             <View>
               <Text className="text-white text-lg">Good Morning 👋</Text>
               <Text className="text-white font-bold text-xl">
-                Juan Dela Cruz
+                {user?.name || "Guest"}
               </Text>
             </View>
             <View className="flex-row space-x-3">
