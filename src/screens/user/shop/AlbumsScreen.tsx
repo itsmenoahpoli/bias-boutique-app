@@ -35,10 +35,15 @@ export const AlbumsScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const data = await productsService.getProductsByCategory("Albums"); // Change category name for each screen
+      const data = await productsService.getProductsByCategory("Albums");
+      if (!data) {
+        throw new Error("No data received from API");
+      }
       setProducts(data);
     } catch (error) {
-      Alert.alert("Error", "Failed to load albums"); // Change error message for each screen
+      console.error("Albums fetch error:", error);
+      Alert.alert("Error", error as any);
+      setProducts([]); // Set empty array as fallback
     } finally {
       setIsLoading(false);
     }

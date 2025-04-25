@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bias Boutique Shop",
     "slug": "bias-boutique-shopapp",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/brand-logo.png",
     "userInterfaceStyle": "light",
@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -27,7 +29,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "50c8de3b-2f99-4a59-b263-3415c2ac7d5f"
+        "projectId": "d4db3f58-56bd-4d1f-abbb-e23c3e4b43e4"
       }
     }
   }
