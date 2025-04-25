@@ -20,7 +20,7 @@ interface OrderDTO {
 }
 
 interface OrderResponse {
-  payment_url: string;
+  payment_link: string;
   // ... other response fields
 }
 
@@ -62,13 +62,11 @@ export const useOrdersService = () => {
         orderPayload
       );
 
-      if (!response.data.payment_url) {
+      console.log("response.data", response.data);
+
+      if (!response.data.payment_link) {
         throw new Error("No payment URL received from server");
       }
-
-      await navigation.navigate("CHECKOUT_WEBVIEW", {
-        url: response.data.payment_url,
-      });
 
       return response.data;
     } catch (error) {

@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "@/store/cart.store";
 import { useNavigation } from "@react-navigation/native";
 import { useOrdersService } from "@/services";
+import { useUserStore } from "@/store/user.store";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "CART_SCREEN">;
@@ -33,6 +34,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const ordersService = useOrdersService();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set()); // Changed from number to string
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const { user } = useUserStore();
 
   useEffect(() => {
     loadCart();
@@ -86,9 +88,29 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const handleCheckout = async () => {
     setIsCheckoutLoading(true);
     try {
-      await navigation.navigate("CHECKOUT_WEBVIEW", {
-        url: "https://dev.xen.to/ctSE5yxG",
+      // Get selected items from the cart
+      const selectedCartItems = items.filter((item) =>
+        selectedItems.has(item.id)
+      );
+
+      if (selectedCartItems.length === 0) {
+        Alert.alert("Error", "Please select items to checkout");
+        return;
+      }
+
+      const orderResponse = await ordersService.createOrder(
+        user?.email || "",
+        selectedCartItems
+      );
+
+      navigation.navigate("CHECKOUT_WEBVIEW", {
+        url: orderResponse.payment_link,
       });
+    } catch (error) {
+      Alert.alert(
+        "Checkout Error",
+        error instanceof Error ? error.message : "Failed to process checkout"
+      );
     } finally {
       setIsCheckoutLoading(false);
     }
