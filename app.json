@@ -31,6 +31,16 @@
       "eas": {
         "projectId": "d4db3f58-56bd-4d1f-abbb-e23c3e4b43e4"
       }
-    }
+    },
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "noah-personal"
+        }
+      ]
+    ]
   }
 }
