@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Bias Boutique Shop",
-    "slug": "bias-boutique-shopapp",
+    "name": "Bias Boutique Shop V2",
+    "slug": "bias-boutique-shopappv2",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/brand-logo.png",
@@ -27,11 +27,6 @@
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "d4db3f58-56bd-4d1f-abbb-e23c3e4b43e4"
-      }
-    },
     "plugins": [
       [
         "@sentry/react-native/expo",
@@ -41,6 +36,11 @@
           "organization": "noah-personal"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "06cecb51-3229-42ef-9640-d5e391c0f451"
+      }
+    }
   }
 }

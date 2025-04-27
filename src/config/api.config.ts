@@ -3,21 +3,6 @@ import { Platform } from "react-native";
 const LOCAL_IP = "192.168.68.124";
 
 const getApiUrl = () => {
-<<<<<<< Updated upstream
-  // if (__DEV__) {
-  //   // Development environment
-  //   if (Platform.OS === "android") {
-  //     // Android emulator
-  //     return "http://10.0.2.2:8000/api/v1";
-  //   } else if (Platform.OS === "ios") {
-  //     // iOS simulator
-  //     return "http://localhost:8000/api/v1";
-  //   } else {
-  //     // Physical device
-  //     return `http://${LOCAL_IP}:8000/api/v1`;
-  //   }
-  // }
-=======
   console.log(__DEV__);
 
   if (__DEV__) {
@@ -30,7 +15,6 @@ const getApiUrl = () => {
       return `http://${LOCAL_IP}:8000/api/v1`;
     }
   }
->>>>>>> Stashed changes
 
   return "https://bias-boutique-backend-production.up.railway.app/api/v1";
 };
