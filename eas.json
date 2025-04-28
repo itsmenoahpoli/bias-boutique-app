@@ -12,7 +12,12 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "production": {
+        "env": {
+          "SENTRY_AUTH_TOKEN": "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"
+        }
+      }
     }
   },
   "submit": {

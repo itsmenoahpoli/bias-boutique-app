@@ -102,32 +102,7 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const handleCategoryPress = useCallback(
     (category: string) => {
       try {
-        switch (category) {
-          case "Albums":
-            navigation.navigate("ALBUMS_SCREEN");
-            break;
-          case "Photocards":
-            navigation.navigate("PHOTOCARDS_SCREEN");
-            break;
-          case "Lightsticks":
-            navigation.navigate("LIGHTSTICKS_SCREEN");
-            break;
-          case "Clothing":
-            navigation.navigate("CLOTHING_SCREEN");
-            break;
-          case "Accessories":
-            navigation.navigate("ACCESSORIES_SCREEN");
-            break;
-          case "Stationary":
-            navigation.navigate("STATIONARIES_SCREEN");
-            break;
-          case "Beauty Products":
-            navigation.navigate("BEAUTY_PRODUCTS_SCREEN");
-            break;
-          case "Home Goods":
-            navigation.navigate("HOME_GOODS_SCREEN");
-            break;
-        }
+        navigation.navigate("PRODUCTS_SCREEN", { category });
       } catch (error) {
         console.warn("Category navigation error:", error);
       }

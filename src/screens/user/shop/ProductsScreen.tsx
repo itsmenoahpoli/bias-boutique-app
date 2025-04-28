@@ -9,19 +9,28 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
 import { ArrowLeft, ShoppingCart } from "lucide-react-native";
 import { PRODUCT_PLACEHOLDER } from "@/images";
 import { useCartStore } from "@/store/cart.store";
-import { useProductsService } from "@/services";
-import type { Product } from "@/services/products.service";
+import { useProductsService, type Product } from "@/services/products.service";
 
-type TScreenProps = {
-  navigation: StackNavigationProp<TStackParamsList, "LIGHTSTICKS_SCREEN">;
+type ProductsScreenNavigationProp = StackNavigationProp<
+  TStackParamsList,
+  "PRODUCTS_SCREEN"
+>;
+
+type ProductsScreenRouteProp = RouteProp<TStackParamsList, "PRODUCTS_SCREEN">;
+
+type Props = {
+  navigation: ProductsScreenNavigationProp;
+  route: ProductsScreenRouteProp;
 };
 
-export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
+export const ProductsScreen = ({ navigation, route }: Props) => {
+  const { category } = route.params;
   const { addToCart, items, loadCart } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -30,15 +39,15 @@ export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
   useEffect(() => {
     loadCart();
     fetchProducts();
-  }, []);
+  }, [category]);
 
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const data = await productsService.getProductsByCategory("Lightsticks");
+      const data = await productsService.getProductsByCategory(category);
       setProducts(data);
     } catch (error) {
-      Alert.alert("Error", "Failed to load lightsticks");
+      Alert.alert("Error", `Failed to load ${category.toLowerCase()}`);
     } finally {
       setIsLoading(false);
     }
@@ -46,6 +55,15 @@ export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
   const formatPrice = (price: number) => {
     return `₱${price.toLocaleString()}`;
+  };
+
+  const handleProductPress = (product: Product) => {
+    navigation.navigate("VIEW_PRODUCT_DETAIL_SCREEN", {
+      product: {
+        ...product,
+        image: PRODUCT_PLACEHOLDER,
+      },
+    });
   };
 
   const handleAddToCart = async (product: Product) => {
@@ -88,26 +106,14 @@ export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
   return (
     <GradientLayout>
-      <View className="px-4 pt-12 pb-4">
-        <View className="flex-row items-center">
-          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
-            <ArrowLeft size={24} color="white" />
-          </TouchableOpacity>
-          <Text className="flex-1 text-center text-white text-xl font-bold mr-9">
-            Lightsticks
-          </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("CART_SCREEN")}
-            className="relative p-2"
-          >
-            <ShoppingCart size={24} color="white" />
-            {items.length > 0 && (
-              <View className="absolute -top-1 -right-1 bg-red-500 rounded-full w-5 h-5 items-center justify-center">
-                <Text className="text-white text-xs">{items.length}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
+      <View className="flex-row items-center justify-between px-4 py-3 pt-12">
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <ArrowLeft color="white" />
+        </TouchableOpacity>
+        <Text className="text-white text-lg font-semibold">{category}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("CART_SCREEN")}>
+          <ShoppingCart color="white" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
@@ -121,14 +127,7 @@ export const LightsticksScreen: React.FC<TScreenProps> = ({ navigation }) => {
               <TouchableOpacity
                 key={product.id}
                 className="w-[48%] bg-white/10 rounded-xl mb-4 overflow-hidden"
-                onPress={() =>
-                  navigation.navigate("VIEW_PRODUCT_DETAIL_SCREEN", {
-                    product: {
-                      ...product,
-                      image: PRODUCT_PLACEHOLDER,
-                    },
-                  })
-                }
+                onPress={() => handleProductPress(product)}
               >
                 <Image
                   source={PRODUCT_PLACEHOLDER}

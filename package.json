@@ -8,7 +8,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "fix-permissions": "chmod -R 755 .",
-    "build:android": "eas build -p android --clear-cache --profile preview"
+    "build:android": "eas build -p android --clear-cache --profile preview",
+    "build:android-local": "eas build --platform android --local"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",

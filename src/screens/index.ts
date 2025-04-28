@@ -19,13 +19,6 @@ export { ProfileScreen } from "@/screens/user/ProfileScreen";
 /**
  * Shop screens
  */
+export { ProductsScreen } from "@/screens/user/shop/ProductsScreen";
 export { ViewProductDetailScreen } from "@/screens/user/shop/ViewProductDetailScreen";
 export { CheckoutWebViewScreen } from "@/screens/user/CheckoutWebViewScreen";
-export { AccessoriesScreen } from "@/screens/user/shop/AccessoriesScreen";
-export { AlbumsScreen } from "@/screens/user/shop/AlbumsScreen";
-export { BeautyProductsScreen } from "@/screens/user/shop/BeautyProductsScreen";
-export { ClothingScreen } from "@/screens/user/shop/ClothingsScreen";
-export { HomeGoodsScreen } from "@/screens/user/shop/HomeGoodsScreen";
-export { LightsticksScreen } from "@/screens/user/shop/LightsticksScreen";
-export { PhotocardsScreen } from "@/screens/user/shop/PhotocardsScreen";
-export { StationariesScreen } from "@/screens/user/shop/StationaryScreen";

@@ -25,6 +25,7 @@ type ProductResponse = {
 
 export const useProductsService = () => {
   const navigation = useNavigation();
+
   const getProductsByCategory = async (
     category: string
   ): Promise<Product[]> => {

@@ -13,14 +13,7 @@ import {
   WalletScreen,
   ProfileScreen,
   ViewProductDetailScreen,
-  AccessoriesScreen,
-  AlbumsScreen,
-  BeautyProductsScreen,
-  ClothingScreen,
-  HomeGoodsScreen,
-  LightsticksScreen,
-  PhotocardsScreen,
-  StationariesScreen,
+  ProductsScreen,
   CartScreen,
   CheckoutWebViewScreen,
 } from "@/screens";
@@ -53,22 +46,13 @@ export const AppNavigation: React.FC = () => {
         <Screen name="CART_SCREEN" component={CartScreen} />
 
         {/* Shop screens */}
+
+        <Screen name="PRODUCTS_SCREEN" component={ProductsScreen} />
         <Screen
           name="VIEW_PRODUCT_DETAIL_SCREEN"
           component={ViewProductDetailScreen}
         />
         <Screen name="CHECKOUT_WEBVIEW" component={CheckoutWebViewScreen} />
-        <Screen name="ACCESSORIES_SCREEN" component={AccessoriesScreen} />
-        <Screen name="ALBUMS_SCREEN" component={AlbumsScreen} />
-        <Screen
-          name="BEAUTY_PRODUCTS_SCREEN"
-          component={BeautyProductsScreen}
-        />
-        <Screen name="CLOTHING_SCREEN" component={ClothingScreen} />
-        <Screen name="HOME_GOODS_SCREEN" component={HomeGoodsScreen} />
-        <Screen name="LIGHTSTICKS_SCREEN" component={LightsticksScreen} />
-        <Screen name="PHOTOCARDS_SCREEN" component={PhotocardsScreen} />
-        <Screen name="STATIONARIES_SCREEN" component={StationariesScreen} />
       </Navigator>
     </NavigationContainer>
   );
