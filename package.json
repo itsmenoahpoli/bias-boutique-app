@@ -18,7 +18,6 @@
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.18",
     "@react-navigation/stack": "^6.3.21",
-    "@sentry/react-native": "^6.11.0",
     "axios": "^1.8.4",
     "expo": "^51.0.22",
     "expo-checkbox": "~3.0.0",

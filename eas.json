@@ -6,22 +6,13 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "env": {
-        "SENTRY_AUTH_TOKEN": "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"
-      }
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "env": {
-        "SENTRY_AUTH_TOKEN": "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"
-      }
+      "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "SENTRY_AUTH_TOKEN": "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"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
