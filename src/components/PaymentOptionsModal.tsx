@@ -11,6 +11,20 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  GCASH,
+  MAYA,
+  GRABPAY,
+  SHOPEEPAY,
+  BPI,
+  CHINABANK,
+  RCBC,
+  UNIONBANK,
+  SEVEN_ELEVEN,
+  CEBUANA,
+  LBC,
+  QRPH,
+} from "@/images";
 
 type PaymentOption = {
   id: string;
@@ -44,25 +58,25 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "gcash",
           name: "GCash",
-          icon: require("@/assets/images/gcash.png"),
+          icon: GCASH,
           description: "Pay with your GCash account",
         },
-        // {
-        //   id: "maya",
-        //   name: "Maya",
-        //   icon: require("@/assets/images/maya.png"),
-        //   description: "Pay with your Maya account",
-        // },
+        {
+          id: "maya",
+          name: "Maya",
+          icon: MAYA,
+          description: "Pay with your Maya account",
+        },
         {
           id: "grabpay",
           name: "GrabPay",
-          icon: require("@/assets/images/grabpay.png"),
+          icon: GRABPAY,
           description: "Pay with your GrabPay account",
         },
         {
           id: "shopeepay",
           name: "ShopeePay",
-          icon: require("@/assets/images/shopeepay.png"),
+          icon: SHOPEEPAY,
           description: "Pay with your ShopeePay account",
         },
       ],
@@ -73,25 +87,25 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "bpi",
           name: "BPI",
-          icon: require("@/assets/images/bpi.png"),
+          icon: BPI,
           description: "Pay via BPI online banking",
         },
-        // {
-        //   id: "chinabank",
-        //   name: "China Bank",
-        //   icon: require("@/assets/images/chinabank.png"),
-        //   description: "Pay via China Bank online banking",
-        // },
+        {
+          id: "chinabank",
+          name: "China Bank",
+          icon: CHINABANK,
+          description: "Pay via China Bank online banking",
+        },
         {
           id: "rcbc",
           name: "RCBC",
-          icon: require("@/assets/images/rcbc.png"),
+          icon: RCBC,
           description: "Pay via RCBC online banking",
         },
         {
           id: "unionbank",
           name: "UnionBank",
-          icon: require("@/assets/images/unionbank.png"),
+          icon: UNIONBANK,
           description: "Pay via UnionBank online banking",
         },
       ],
@@ -102,19 +116,19 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "7-11",
           name: "7-Eleven",
-          icon: require("@/assets/images/711.png"),
+          icon: SEVEN_ELEVEN,
           description: "Pay at any 7-Eleven branch",
         },
         {
           id: "cebuana",
           name: "Cebuana Lhuillier",
-          icon: require("@/assets/images/cebuana.png"),
+          icon: CEBUANA,
           description: "Pay at any Cebuana Lhuillier branch",
         },
         {
           id: "lbc",
           name: "LBC",
-          icon: require("@/assets/images/lbc.png"),
+          icon: LBC,
           description: "Pay at any LBC branch",
         },
       ],
@@ -125,7 +139,7 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "qrph",
           name: "QR PH",
-          icon: require("./../../assets/images/qrph.png"),
+          icon: QRPH,
           description: "Pay using QR PH code",
         },
       ],
