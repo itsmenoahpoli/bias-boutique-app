@@ -25,6 +25,7 @@ import {
   PenTool,
   Sparkles,
   Home,
+  Grid,
 } from "lucide-react-native";
 import { BRAND_LOGO } from "@/images";
 
@@ -41,12 +42,13 @@ const categories = [
   { label: "Stationary", icon: PenTool },
   { label: "Beauty Products", icon: Sparkles },
   { label: "Home Goods", icon: Home },
+  { label: "View All", icon: Grid },
 ];
 
 export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
-  // Add error handling for rendering
   const [hasError, setHasError] = useState(false);
   const user = useUserStore((state) => state.user);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (hasError) {
@@ -110,6 +112,15 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
     [navigation]
   );
 
+  const handleSearch = useCallback(() => {
+    if (searchQuery.trim()) {
+      navigation.navigate("PRODUCTS_SCREEN", {
+        category: "View All",
+        searchQuery: searchQuery.trim(),
+      });
+    }
+  }, [searchQuery, navigation]);
+
   const renderCategories = useMemo(() => {
     return categories.map((item, index) => {
       const IconComponent = item.icon;
@@ -162,9 +173,13 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
             <TextInput
               placeholder="Search"
               placeholderTextColor="white"
-              className="flex-1 text-white"
+              className="flex-1 text-white pl-3"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
-            <Ionicons name="options-outline" size={20} color="white" />
+            <TouchableOpacity onPress={handleSearch}>
+              <Ionicons name="arrow-forward" size={20} color="white" />
+            </TouchableOpacity>
           </View>
 
           {/* Special Offers */}

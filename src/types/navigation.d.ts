@@ -2,6 +2,9 @@ export type TStackParamsList = {
   WELCOME_SCREEN: undefined;
   LOGIN_SCREEN: undefined;
   SIGNUP_SCREEN: undefined;
+  DOCUMENT_SCREEN: {
+    type: string;
+  };
   PRICINGPLAN_SCREEN: undefined;
   USERHOME_SCREEN: undefined;
   USERHOME2_SCREEN: undefined;
@@ -20,6 +23,7 @@ export type TStackParamsList = {
   };
   PRODUCTS_SCREEN: {
     category: string;
+    searchQuery?: string;
   };
   CART_SCREEN: undefined;
   CHECKOUT_WEBVIEW: {

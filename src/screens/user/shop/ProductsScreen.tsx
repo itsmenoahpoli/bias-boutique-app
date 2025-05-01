@@ -30,7 +30,7 @@ type Props = {
 };
 
 export const ProductsScreen = ({ navigation, route }: Props) => {
-  const { category } = route.params;
+  const { category, searchQuery } = route.params;
   const { addToCart, items, loadCart } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,10 +44,13 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const data = await productsService.getProductsByCategory(category);
-      setProducts(data);
+      const fetchedProducts = await productsService.getProductsByCategory(
+        category,
+        searchQuery
+      );
+      setProducts(fetchedProducts);
     } catch (error) {
-      Alert.alert("Error", `Failed to load ${category.toLowerCase()}`);
+      Alert.alert("Error", `Failed to load products`);
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +109,7 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
 
   return (
     <GradientLayout>
-      <View className="flex-row items-center justify-between px-4 py-3 pt-12">
+      <View className="flex-row items-center justify-between px-4 py-3 pt-20">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft color="white" />
         </TouchableOpacity>

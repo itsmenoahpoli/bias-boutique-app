@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
@@ -7,6 +14,7 @@ import Checkbox from "expo-checkbox";
 import { useAuthService } from "@/services/auth.service";
 import { useForm, Controller } from "react-hook-form";
 import { ApiError } from "@/types/api.types";
+import { BRAND_LOGO } from "@/images";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "SIGNUP_SCREEN">;
@@ -120,6 +128,12 @@ export const SignupScreen: React.FC<TScreenProps> = (props) => {
   return (
     <GradientLayout>
       <View className="flex-1 items-center justify-center bg-gradient-to-b from-indigo-500 to-cyan-400 p-4">
+        <Image
+          source={BRAND_LOGO}
+          className="w-24 h-24 mb-6"
+          resizeMethod="scale"
+          resizeMode="contain"
+        />
         <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
           <View className="flex-row justify-between mb-6">
             <TouchableOpacity
@@ -342,8 +356,27 @@ export const SignupScreen: React.FC<TScreenProps> = (props) => {
             />
             <Text className="text-xs text-gray-600 ml-2 flex-1">
               I acknowledge that I agree to the{" "}
-              <Text className="text-blue-600">Terms of Use</Text> and have read
-              the <Text className="text-blue-600">Privacy Policy</Text>
+              <TouchableOpacity
+                className="px-1 pt-2"
+                onPress={() =>
+                  props.navigation.navigate("DOCUMENT_SCREEN", {
+                    type: "terms-of-use",
+                  })
+                }
+              >
+                <Text className="text-xs text-blue-600">Terms of Use</Text>
+              </TouchableOpacity>{" "}
+              and have read the{" "}
+              <TouchableOpacity
+                className="px-1 pt-2"
+                onPress={() =>
+                  props.navigation.navigate("DOCUMENT_SCREEN", {
+                    type: "privacy-policy",
+                  })
+                }
+              >
+                <Text className="text-xs text-blue-600">Privacy Policy</Text>
+              </TouchableOpacity>
             </Text>
           </View>
 

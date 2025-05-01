@@ -5,6 +5,7 @@ export { WelcomeScreen } from "@/screens/WelcomeScreen";
  */
 export { LoginScreen } from "@/screens/auth/LoginScreen";
 export { SignupScreen } from "@/screens/auth/SignupScreen";
+export { DocumentScreen } from "@/screens/auth/DocumentScreen";
 
 /**
  * User screens

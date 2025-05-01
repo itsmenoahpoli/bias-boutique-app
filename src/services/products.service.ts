@@ -27,14 +27,31 @@ export const useProductsService = () => {
   const navigation = useNavigation();
 
   const getProductsByCategory = async (
-    category: string
+    category: string,
+    searchQuery?: string
   ): Promise<Product[]> => {
     try {
-      const response = await $baseApi.get<Product[]>(
-        `/products?category=${category}`
-      );
+      let url =
+        category !== "View All"
+          ? `/products?category=${category}`
+          : `/products`;
 
-      if (!response.data.length) {
+      if (searchQuery) {
+        url += `${url.includes("?") ? "&" : "?"}q=${searchQuery}`;
+      }
+
+      const response = await $baseApi.get<Product[]>(url);
+
+      if (!response.data.length && category === "View All" && searchQuery) {
+        Alert.alert("No Products", "No products found for your search", [
+          {
+            text: "OK",
+            onPress: () => navigation.goBack(),
+          },
+        ]);
+      }
+
+      if (!response.data.length && category !== "View All") {
         Alert.alert("No Products", "No products available for this category", [
           {
             text: "OK",
@@ -45,7 +62,6 @@ export const useProductsService = () => {
 
       return response.data.map((product) => ({
         ...product,
-        // Format the price to Philippine Peso
         price: product.is_discounted ? product.discounted_price : product.price,
       }));
     } catch (error) {

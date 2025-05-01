@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
 import { useAuthService } from "@/services/auth.service";
+import { BRAND_LOGO } from "@/images";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "LOGIN_SCREEN">;
@@ -43,6 +51,12 @@ export const LoginScreen: React.FC<TScreenProps> = (props) => {
   return (
     <GradientLayout>
       <View className="flex-1 items-center justify-center bg-gradient-to-b from-indigo-500 to-cyan-400 p-4">
+        <Image
+          source={BRAND_LOGO}
+          className="w-24 h-24 mb-6"
+          resizeMethod="scale"
+          resizeMode="contain"
+        />
         <View className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
           <View className="flex-row justify-between mb-6">
             <TouchableOpacity className="flex-1 items-center rounded-full bg-blue-700 py-2">

@@ -14,7 +14,6 @@ const $baseApi = axios.create({
   },
 });
 
-// Check internet connection before request
 $baseApi.interceptors.request.use(
   async (
     config: InternalAxiosRequestConfig
@@ -26,7 +25,6 @@ $baseApi.interceptors.request.use(
         throw new Error("No internet connection");
       }
 
-      // Add timestamp to prevent caching
       config.params = {
         ...config.params,
         _t: Date.now(),
