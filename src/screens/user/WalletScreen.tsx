@@ -1,7 +1,9 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
+import { CashInModal } from "@/components/CashInModal";
+import { PaymentOptionsModal } from "@/components/PaymentOptionsModal";
 import { type TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -10,6 +12,25 @@ type TScreenProps = {
 };
 
 export const WalletScreen: React.FC<TScreenProps> = ({ navigation }) => {
+  const [isCashInModalVisible, setIsCashInModalVisible] = useState(false);
+  const [isPaymentOptionsModalVisible, setIsPaymentOptionsModalVisible] =
+    useState(false);
+
+  const handleCashIn = (amount: number) => {
+    // Handle the cash in logic here
+    navigation.navigate("CHECKOUT_WEBVIEW", {
+      url: `your-payment-gateway-url?amount=${amount}`,
+    });
+  };
+
+  const handleSelectPaymentOption = (option: any) => {
+    // Handle the payment option selection
+    // Alert.alert(
+    //   "Payment Option Selected",
+    //   `You selected ${option.name}. This feature will be implemented soon.`
+    // );
+  };
+
   return (
     <GradientLayout>
       <View className="flex-1 px-4 py-6">
@@ -18,14 +39,19 @@ export const WalletScreen: React.FC<TScreenProps> = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
-          <Text className="text-white text-lg font-bold ml-4">Wallet</Text>
+          <Text className="text-white text-lg font-bold ml-4 flex-1 text-center mr-9">
+            Wallet
+          </Text>
         </View>
 
         {/* Balance Card */}
         <View className="bg-white/10 rounded-2xl p-4 mb-4">
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-white text-sm">Available Balance (₱)</Text>
-            <TouchableOpacity className="bg-pink-500 px-4 py-1 rounded-full">
+            <TouchableOpacity
+              className="bg-pink-500 px-4 py-1 rounded-full"
+              onPress={() => setIsCashInModalVisible(true)}
+            >
               <Text className="text-white text-sm">Cash In</Text>
             </TouchableOpacity>
           </View>
@@ -52,13 +78,22 @@ export const WalletScreen: React.FC<TScreenProps> = ({ navigation }) => {
         <View className="flex-row flex-wrap justify-between gap-y-4">
           {[
             { label: "Transaction History", icon: "receipt" },
-            { label: "Payment Options", icon: "card" },
-            { label: "Cash-In", icon: "add-circle" },
+            {
+              label: "Payment Options",
+              icon: "card",
+              onPress: () => setIsPaymentOptionsModalVisible(true),
+            },
+            {
+              label: "Cash-In",
+              icon: "add-circle",
+              onPress: () => setIsCashInModalVisible(true),
+            },
             { label: "Voucher", icon: "pricetag" },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
               className="w-[48%] items-center bg-white/10 rounded-2xl p-4"
+              onPress={item.onPress}
             >
               <View className="w-12 h-12 bg-pink-500/20 rounded-full justify-center items-center mb-2">
                 <Ionicons name={item.icon as any} size={24} color="#fff" />
@@ -69,6 +104,20 @@ export const WalletScreen: React.FC<TScreenProps> = ({ navigation }) => {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Cash In Modal */}
+        <CashInModal
+          visible={isCashInModalVisible}
+          onClose={() => setIsCashInModalVisible(false)}
+          onCashIn={handleCashIn}
+        />
+
+        {/* Payment Options Modal */}
+        <PaymentOptionsModal
+          visible={isPaymentOptionsModalVisible}
+          onClose={() => setIsPaymentOptionsModalVisible(false)}
+          onSelectPaymentOption={handleSelectPaymentOption}
+        />
       </View>
     </GradientLayout>
   );

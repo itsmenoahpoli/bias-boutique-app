@@ -6,14 +6,10 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  TextInput,
-  Modal,
-  Pressable,
-  Platform,
-  KeyboardAvoidingView,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
+import { CashInModal } from "@/components/CashInModal";
 import { type TStackParamsList } from "@/types/navigation";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useUserStore } from "@/store/user.store";
@@ -32,16 +28,17 @@ const iconList = [
 
 const menuList = [
   { label: "Voucher", icon: "pricetag" },
-  { label: "Recently Viewed", icon: "time" },
-  { label: "My Ratings", icon: "star" },
+  // { label: "Recently Viewed", icon: "time" },
+  // { label: "My Ratings", icon: "star" },
   { label: "Account Settings", icon: "settings" },
   { label: "Help Center", icon: "help-circle" },
-  { label: "Chat Assistant", icon: "chatbubbles" },
+  { label: "Chat Assistant AI", icon: "chatbubbles" },
 ];
 
 export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const logout = useUserStore((state) => state.logout);
   const user = useUserStore((state) => state.user);
+  const [isCashInModalVisible, setIsCashInModalVisible] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -55,126 +52,6 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
     });
   };
 
-  const [isCashInModalVisible, setIsCashInModalVisible] = useState(false);
-  const [customAmount, setCustomAmount] = useState("");
-  const [isCustomAmount, setIsCustomAmount] = useState(false);
-
-  const CashInModal = () => {
-    const amounts = [100, 200, 300, 400, 500, 1000];
-
-    const handleAmountSelect = (amount: number) => {
-      setIsCashInModalVisible(false);
-      setIsCustomAmount(false);
-      setCustomAmount("");
-      handleCashIn(amount);
-    };
-
-    const handleCustomAmountSubmit = () => {
-      const amount = Number(customAmount);
-      if (!isNaN(amount) && amount > 0) {
-        setIsCashInModalVisible(false);
-        setIsCustomAmount(false);
-        setCustomAmount("");
-        handleCashIn(amount);
-      } else {
-        Alert.alert("Invalid Amount", "Please enter a valid amount");
-      }
-    };
-
-    return (
-      <Modal
-        visible={isCashInModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsCashInModalVisible(false)}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <Pressable
-            className="flex-1 justify-center items-center bg-black/50"
-            onPress={() => setIsCashInModalVisible(false)}
-          >
-            <Pressable
-              className="w-[80%] bg-white rounded-2xl p-4"
-              onPress={(e) => e.stopPropagation()}
-            >
-              <Text className="text-xl font-bold text-center mb-4">
-                WALLET CASH-IN
-              </Text>
-              <Text className="font-medium text-center mb-4">
-                Select Amount
-              </Text>
-
-              {!isCustomAmount ? (
-                <>
-                  <View className="flex-row flex-wrap justify-between">
-                    {amounts.map((amount) => (
-                      <TouchableOpacity
-                        key={amount}
-                        className="w-[30%] bg-purple-100 rounded-xl p-3 mb-3"
-                        onPress={() => handleAmountSelect(amount)}
-                      >
-                        <Text className="text-purple-900 text-center font-semibold">
-                          ₱{amount}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  <TouchableOpacity
-                    className="mt-2"
-                    onPress={() => setIsCustomAmount(true)}
-                  >
-                    <Text className="text-purple-700 text-center">
-                      Enter Custom Amount
-                    </Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <View>
-                  <TextInput
-                    className="border border-gray-300 rounded-xl p-3 mb-4"
-                    placeholder="Enter amount"
-                    keyboardType="numeric"
-                    value={customAmount}
-                    onChangeText={setCustomAmount}
-                    autoFocus
-                  />
-                  <View className="flex-row justify-end space-x-3">
-                    <TouchableOpacity
-                      className="px-4 py-2"
-                      onPress={() => {
-                        setIsCustomAmount(false);
-                        setCustomAmount("");
-                      }}
-                    >
-                      <Text className="text-gray-600">Back</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      className="bg-purple-700 px-4 py-2 rounded-xl"
-                      onPress={handleCustomAmountSubmit}
-                    >
-                      <Text className="text-white">Confirm</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-
-              <TouchableOpacity
-                className="mt-4"
-                onPress={() => setIsCashInModalVisible(false)}
-              >
-                <Text className="text-gray-500 text-center">Cancel</Text>
-              </TouchableOpacity>
-            </Pressable>
-          </Pressable>
-        </KeyboardAvoidingView>
-      </Modal>
-    );
-  };
-
   return (
     <GradientLayout>
       <ScrollView className="flex-1 px-4 py-6">
@@ -185,6 +62,13 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
+
+        {/* Header Title */}
+        <View className="w-full pt-6 mb-4">
+          <Text className="text-white font-bold text-xl text-center">
+            My Profile
+          </Text>
+        </View>
 
         {/* User Info */}
         <View className="items-center">
@@ -261,7 +145,13 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <CashInModal />
+
+      {/* Cash In Modal */}
+      <CashInModal
+        visible={isCashInModalVisible}
+        onClose={() => setIsCashInModalVisible(false)}
+        onCashIn={handleCashIn}
+      />
     </GradientLayout>
   );
 };

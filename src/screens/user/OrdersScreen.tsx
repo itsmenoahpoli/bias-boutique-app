@@ -645,7 +645,23 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
           </View>
         ) : filteredOrders.length === 0 ? (
           <View className="flex-1 justify-center items-center">
-            <Text className="text-white text-base">No orders yet</Text>
+            <View className="bg-white/10 rounded-xl p-6 w-full items-center">
+              <Ionicons name="cart-outline" size={60} color="white" />
+              <Text className="text-white text-lg font-semibold mt-4">
+                You have no orders yet
+              </Text>
+              <Text className="text-white/70 text-center mt-2">
+                Start shopping to see your orders here
+              </Text>
+              <TouchableOpacity
+                className="mt-6 bg-purple-500 px-6 py-3 rounded-lg"
+                onPress={() => navigation.navigate("USERHOME_SCREEN")}
+              >
+                <Text className="text-white font-semibold">
+                  Browse Products
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ) : (
           <ScrollView
@@ -694,7 +710,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
                           paymentStatus
                         )}`}
                       >
-                        <Text className="text-white text-xs">
+                        <Text className="text-white text-xs uppercase">
                           {paymentStatus}
                         </Text>
                       </View>
@@ -709,7 +725,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
                           paymentType
                         )}`}
                       >
-                        <Text className="text-white text-xs">
+                        <Text className="text-white text-xs uppercase">
                           {paymentType}
                         </Text>
                       </View>
@@ -724,7 +740,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
                           shipmentStatus
                         )}`}
                       >
-                        <Text className="text-white text-xs">
+                        <Text className="text-white text-xs uppercase">
                           {shipmentStatus}
                         </Text>
                       </View>

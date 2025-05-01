@@ -11,6 +11,7 @@ export type TStackParamsList = {
   ORDERS_SCREEN: undefined;
   WALLET_SCREEN: undefined;
   PROFILE_SCREEN: undefined;
+  CHATASSISTANT_SCREEN: undefined;
   ACCOUNT_SETTINGS_SCREEN: undefined;
   VIEW_PRODUCT_DETAIL_SCREEN: {
     product: {
