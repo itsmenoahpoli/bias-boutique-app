@@ -3,6 +3,7 @@ import { CartItem, useCartStore } from "@/store/cart.store";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TStackParamsList } from "@/types/navigation";
+import { useUserStore } from "@/store/user.store";
 
 interface CartItemDTO {
   sku: string;
@@ -21,12 +22,26 @@ interface OrderDTO {
 
 interface OrderResponse {
   payment_link: string;
-  // ... other response fields
 }
 
 export const useOrdersService = () => {
   const navigation = useNavigation<StackNavigationProp<TStackParamsList>>();
   const { removeFromCart } = useCartStore();
+  const { user } = useUserStore();
+
+  const fetchOrdersByCurrentUserEmail = async () => {
+    const email = user?.email || "";
+    try {
+      const response = await $baseApi.get(`/orders?email=${email}`);
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch orders: ${error.message}`);
+      }
+      throw new Error("Failed to fetch orders");
+    }
+  };
 
   const createOrder = async (
     customerEmail: string,
@@ -84,5 +99,6 @@ export const useOrdersService = () => {
 
   return {
     createOrder,
+    fetchOrdersByCurrentUserEmail,
   };
 };
