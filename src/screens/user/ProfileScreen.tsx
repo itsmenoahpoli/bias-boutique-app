@@ -4,7 +4,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { CashInModal } from "@/components/CashInModal";
 import { type TStackParamsList } from "@/types/navigation";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useUserStore } from "@/store/user.store";
 
 type TScreenProps = {
@@ -127,6 +127,8 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   navigation.navigate("ACCOUNT_SETTINGS_SCREEN");
                 } else if (item.label === "Help Center") {
                   navigation.navigate("HELPCENTER_SCREEN");
+                } else if (item.label === "Chat Assistant AI") {
+                  navigation.navigate("CHATASSISTANT_SCREEN");
                 }
               }}
             >

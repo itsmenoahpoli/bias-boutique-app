@@ -47,12 +47,12 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
           icon: require("@/assets/images/gcash.png"),
           description: "Pay with your GCash account",
         },
-        {
-          id: "maya",
-          name: "Maya",
-          icon: require("@/assets/images/maya.png"),
-          description: "Pay with your Maya account",
-        },
+        // {
+        //   id: "maya",
+        //   name: "Maya",
+        //   icon: require("@/assets/images/maya.png"),
+        //   description: "Pay with your Maya account",
+        // },
         {
           id: "grabpay",
           name: "GrabPay",
@@ -76,12 +76,12 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
           icon: require("@/assets/images/bpi.png"),
           description: "Pay via BPI online banking",
         },
-        {
-          id: "chinabank",
-          name: "China Bank",
-          icon: require("@/assets/images/chinabank.png"),
-          description: "Pay via China Bank online banking",
-        },
+        // {
+        //   id: "chinabank",
+        //   name: "China Bank",
+        //   icon: require("@/assets/images/chinabank.png"),
+        //   description: "Pay via China Bank online banking",
+        // },
         {
           id: "rcbc",
           name: "RCBC",

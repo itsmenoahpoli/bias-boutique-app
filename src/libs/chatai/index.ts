@@ -1,4 +1,5 @@
 import { OPENAI_CONFIG } from "@/config/opanai.config";
+import { contextData } from "./context";
 
 const { BASE_URL, API_KEY } = OPENAI_CONFIG;
 
@@ -12,18 +13,6 @@ type GetResponseOptions = {
   contextData: ChatContextItem[];
   openAiApiKey?: string;
 };
-
-const contextData: ChatContextItem[] = [
-  {
-    question: "reset password",
-    answer: "Go to Settings > Account > Reset Password.",
-  },
-  { question: "contact support", answer: "Email us at support@example.com." },
-  {
-    question: "refund policy",
-    answer: "Refunds are available within 30 days.",
-  },
-];
 
 export async function getChatResponse({
   userMessage,

@@ -19,6 +19,7 @@ import {
   CheckoutWebViewScreen,
   AccountSettingsScreen,
   HelpCenterScreen,
+  ChatAssistantScreen,
 } from "@/screens";
 
 const { Navigator, Screen } = createStackNavigator<TStackParamsList>();
@@ -53,6 +54,7 @@ export const AppNavigation: React.FC = () => {
           name="ACCOUNT_SETTINGS_SCREEN"
           component={AccountSettingsScreen}
         />
+        <Screen name="CHATASSISTANT_SCREEN" component={ChatAssistantScreen} />
 
         {/* Shop screens */}
 
