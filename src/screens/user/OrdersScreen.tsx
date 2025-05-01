@@ -396,7 +396,13 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
                           : "rgba(107,114,128,0.5)",
                     }}
                   >
-                    <Text style={{ color: "white", fontSize: 12 }}>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 12,
+                        textTransform: "uppercase",
+                      }}
+                    >
                       {paymentStatus}
                     </Text>
                   </View>
@@ -427,7 +433,13 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
                           : "rgba(107,114,128,0.5)",
                     }}
                   >
-                    <Text style={{ color: "white", fontSize: 12 }}>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 12,
+                        textTransform: "uppercase",
+                      }}
+                    >
                       {paymentType}
                     </Text>
                   </View>
@@ -458,7 +470,13 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
                           : "rgba(249,115,22,0.5)",
                     }}
                   >
-                    <Text style={{ color: "white", fontSize: 12 }}>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 12,
+                        textTransform: "uppercase",
+                      }}
+                    >
                       {shipmentStatus}
                     </Text>
                   </View>
