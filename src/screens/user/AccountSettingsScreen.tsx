@@ -12,6 +12,7 @@ import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useUserStore } from "@/store/user.store";
+import { useAuthService } from "@/services/auth.service";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "ACCOUNT_SETTINGS_SCREEN">;
@@ -21,22 +22,33 @@ export const AccountSettingsScreen: React.FC<TScreenProps> = ({
   navigation,
 }) => {
   const user = useUserStore((state) => state.user);
+  const { updateUserAccount } = useAuthService();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    username: user?.username || "",
     contact_no: user?.contact_no || "",
     // @ts-ignore
     address: user?.address || "",
   });
 
   const handleSave = async () => {
+    if (!user?.id) {
+      Alert.alert("Error", "User information not found");
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      // TODO: Implement update logic here
+      await updateUserAccount(user.id, formData);
       Alert.alert("Success", "Profile updated successfully");
     } catch (error) {
-      Alert.alert("Error", "Failed to update profile");
+      const message =
+        error instanceof Error ? error.message : "Failed to update profile";
+      Alert.alert("Error", message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,19 +90,6 @@ export const AccountSettingsScreen: React.FC<TScreenProps> = ({
           </View>
 
           <View>
-            <Text className="text-white text-sm mb-1">Username</Text>
-            <TextInput
-              className="bg-white/10 rounded-xl p-3 text-white"
-              value={formData.username}
-              onChangeText={(text) =>
-                setFormData({ ...formData, username: text })
-              }
-              autoCapitalize="none"
-              placeholderTextColor="rgba(255,255,255,0.5)"
-            />
-          </View>
-
-          <View>
             <Text className="text-white text-sm mb-1">Contact Number</Text>
             <TextInput
               className="bg-white/10 rounded-xl p-3 text-white"
@@ -120,9 +119,10 @@ export const AccountSettingsScreen: React.FC<TScreenProps> = ({
           <TouchableOpacity
             onPress={handleSave}
             className="bg-pink-500 rounded-xl py-3 mt-6"
+            disabled={isLoading}
           >
             <Text className="text-white text-center font-bold">
-              Save Changes
+              {isLoading ? "Saving..." : "Save Changes"}
             </Text>
           </TouchableOpacity>
         </View>

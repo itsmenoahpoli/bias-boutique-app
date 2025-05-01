@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { CashInModal } from "@/components/CashInModal";
@@ -129,6 +122,13 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
             <TouchableOpacity
               key={idx}
               className="flex-row items-center p-3 bg-white/10 rounded-xl"
+              onPress={() => {
+                if (item.label === "Account Settings") {
+                  navigation.navigate("ACCOUNT_SETTINGS_SCREEN");
+                } else if (item.label === "Help Center") {
+                  navigation.navigate("HELPCENTER_SCREEN");
+                }
+              }}
             >
               <Ionicons name={item.icon as any} size={20} color="#fff" />
               <Text className="text-white ml-3 text-sm">{item.label}</Text>

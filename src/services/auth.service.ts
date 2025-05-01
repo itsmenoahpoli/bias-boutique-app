@@ -16,6 +16,14 @@ type LoginUserPayload = {
   password: string;
 };
 
+type UpdateUserPayload = {
+  name: string;
+  email: string;
+  contact_no: string;
+  address?: string;
+  password?: string;
+};
+
 export const useAuthService = () => {
   const setUser = useUserStore((state) => state.setUser);
 
@@ -75,8 +83,45 @@ export const useAuthService = () => {
     }
   };
 
+  const updateUserAccount = async (
+    userId: string,
+    payload: UpdateUserPayload
+  ) => {
+    try {
+      const response = await $baseApi.post(`/auth/update-account/${userId}`, {
+        ...payload,
+        contact_number: payload.contact_no,
+      });
+
+      const user = useUserStore.getState().user;
+      if (user) {
+        // Update user in store with new data
+        await setUser({
+          ...user,
+          ...payload,
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      const apiError = error as ApiError;
+
+      if (apiError.isNetworkError) {
+        throw new Error(apiError.message);
+      }
+
+      if (apiError.status === 422 && apiError.errors) {
+        const firstError = Object.values(apiError.errors)[0]?.[0];
+        throw new Error(firstError || apiError.message);
+      }
+
+      throw new Error(apiError.message || "An unexpected error occurred");
+    }
+  };
+
   return {
     loginUser,
     registerUser,
+    updateUserAccount,
   };
 };

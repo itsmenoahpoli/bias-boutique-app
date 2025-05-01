@@ -8,6 +8,7 @@ import {
   Modal,
   FlatList,
 } from "react-native";
+import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
@@ -16,6 +17,7 @@ import { useOrdersService } from "@/services/orders.service";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "ORDERS_SCREEN">;
+  route: RouteProp<TStackParamsList, "ORDERS_SCREEN">;
 };
 
 interface OrderItem {
@@ -43,14 +45,13 @@ interface Order {
 
 const orderStatuses = [
   "All Orders",
-  "To Pay",
   "To Ship",
   "To Receive",
   "To Review",
   "Returns/Cancels",
 ];
 
-export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
+export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("All Orders");
   const [orders, setOrders] = useState<Order[]>([]);
@@ -59,9 +60,26 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { fetchOrdersByCurrentUserEmail } = useOrdersService();
 
+  // Get params from route if they exist
+  const selectedOrderId = route.params?.selectedOrderId;
+  const showDetails = route.params?.showDetails;
+
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+    // If selectedOrderId is provided, find and show that order's details
+    if (selectedOrderId && orders.length > 0) {
+      const order = orders.find((order) => order.id === selectedOrderId);
+      if (order) {
+        setSelectedOrder(order);
+        if (showDetails) {
+          setModalVisible(true);
+        }
+      }
+    }
+  }, [selectedOrderId, orders]);
 
   const fetchOrders = async () => {
     setIsLoading(true);
@@ -104,18 +122,13 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
   // Filter orders based on selected status
   const filteredOrders = useMemo(() => {
-    if (selectedStatus === "All Orders") return orders;
+    if (selectedStatus === "All Orders" || selectedStatus === "To Ship")
+      return orders;
 
     return orders.filter((order) => {
       switch (selectedStatus) {
         case "To Pay":
           return order.payment_status?.toLowerCase() === "pending";
-        case "To Ship":
-          return (
-            order.payment_status?.toLowerCase() === "paid" &&
-            (!order.shipment_status ||
-              order.shipment_status.toLowerCase() === "to ship")
-          );
         case "To Receive":
           return order.shipment_status?.toLowerCase() === "shipped";
         case "To Review":
@@ -198,7 +211,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
       case "cancelled":
         return "bg-red-500/50";
       default:
-        return "bg-orange-500/50"; // Default to orange for "To Ship"
+        return "bg-orange-500/50";
     }
   };
 
@@ -623,13 +636,13 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
 
           {isDropdownOpen && (
-            <View className="absolute top-14 left-0 right-0 bg-white/10 rounded-xl z-10 mt-1">
+            <View className="absolute top-14 left-0 right-0 bg-purple-800 rounded-xl z-10 -mt-2">
               {orderStatuses.map((status) => (
                 <TouchableOpacity
                   key={status}
                   onPress={() => handleStatusSelect(status)}
-                  className={`p-3 border-b border-white/5 ${
-                    status === selectedStatus ? "bg-white/20" : ""
+                  className={`p-3 border-b border-white/20 ${
+                    status === selectedStatus ? "bg-purple-600" : ""
                   }`}
                 >
                   <Text className="text-white">{status}</Text>
@@ -648,17 +661,27 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation }) => {
             <View className="bg-white/10 rounded-xl p-6 w-full items-center">
               <Ionicons name="cart-outline" size={60} color="white" />
               <Text className="text-white text-lg font-semibold mt-4">
-                You have no orders yet
+                {selectedStatus === "All Orders"
+                  ? "You have no orders yet"
+                  : `No ${selectedStatus} orders found`}
               </Text>
               <Text className="text-white/70 text-center mt-2">
-                Start shopping to see your orders here
+                {selectedStatus === "All Orders"
+                  ? "Start shopping to see your orders here"
+                  : "Try selecting a different filter or place new orders"}
               </Text>
               <TouchableOpacity
                 className="mt-6 bg-purple-500 px-6 py-3 rounded-lg"
-                onPress={() => navigation.navigate("USERHOME_SCREEN")}
+                onPress={() =>
+                  selectedStatus === "All Orders"
+                    ? navigation.navigate("USERHOME_SCREEN")
+                    : setSelectedStatus("All Orders")
+                }
               >
                 <Text className="text-white font-semibold">
-                  Browse Products
+                  {selectedStatus === "All Orders"
+                    ? "Browse Products"
+                    : "View All Orders"}
                 </Text>
               </TouchableOpacity>
             </View>

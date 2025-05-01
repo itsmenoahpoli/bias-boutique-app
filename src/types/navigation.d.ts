@@ -8,9 +8,13 @@ export type TStackParamsList = {
   PRICINGPLAN_SCREEN: undefined;
   USERHOME_SCREEN: undefined;
   USERHOME2_SCREEN: undefined;
-  ORDERS_SCREEN: undefined;
+  ORDERS_SCREEN: {
+    selectedOrderId?: string;
+    showDetails?: boolean;
+  };
   WALLET_SCREEN: undefined;
   PROFILE_SCREEN: undefined;
+  HELPCENTER_SCREEN: undefined;
   CHATASSISTANT_SCREEN: undefined;
   ACCOUNT_SETTINGS_SCREEN: undefined;
   VIEW_PRODUCT_DETAIL_SCREEN: {
