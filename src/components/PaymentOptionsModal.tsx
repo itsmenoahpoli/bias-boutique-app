@@ -11,25 +11,11 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  GCASH,
-  MAYA,
-  GRABPAY,
-  SHOPEEPAY,
-  BPI,
-  CHINABANK,
-  RCBC,
-  UNIONBANK,
-  SEVEN_ELEVEN,
-  CEBUANA,
-  LBC,
-  QRPH,
-} from "@/images";
 
 type PaymentOption = {
   id: string;
   name: string;
-  icon: string | React.ReactNode;
+  icon?: string | React.ReactNode;
   description?: string;
 };
 
@@ -58,25 +44,21 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "gcash",
           name: "GCash",
-          icon: GCASH,
           description: "Pay with your GCash account",
         },
         {
           id: "maya",
           name: "Maya",
-          icon: MAYA,
           description: "Pay with your Maya account",
         },
         {
           id: "grabpay",
           name: "GrabPay",
-          icon: GRABPAY,
           description: "Pay with your GrabPay account",
         },
         {
           id: "shopeepay",
           name: "ShopeePay",
-          icon: SHOPEEPAY,
           description: "Pay with your ShopeePay account",
         },
       ],
@@ -87,25 +69,21 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "bpi",
           name: "BPI",
-          icon: BPI,
           description: "Pay via BPI online banking",
         },
         {
           id: "chinabank",
           name: "China Bank",
-          icon: CHINABANK,
           description: "Pay via China Bank online banking",
         },
         {
           id: "rcbc",
           name: "RCBC",
-          icon: RCBC,
           description: "Pay via RCBC online banking",
         },
         {
           id: "unionbank",
           name: "UnionBank",
-          icon: UNIONBANK,
           description: "Pay via UnionBank online banking",
         },
       ],
@@ -116,19 +94,16 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "7-11",
           name: "7-Eleven",
-          icon: SEVEN_ELEVEN,
           description: "Pay at any 7-Eleven branch",
         },
         {
           id: "cebuana",
           name: "Cebuana Lhuillier",
-          icon: CEBUANA,
           description: "Pay at any Cebuana Lhuillier branch",
         },
         {
           id: "lbc",
           name: "LBC",
-          icon: LBC,
           description: "Pay at any LBC branch",
         },
       ],
@@ -139,7 +114,6 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         {
           id: "qrph",
           name: "QR PH",
-          icon: QRPH,
           description: "Pay using QR PH code",
         },
       ],
@@ -241,20 +215,6 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
                       // onClose();
                     }}
                   >
-                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
-                      {typeof option.icon === "string" ? (
-                        <Image
-                          source={{ uri: option.icon }}
-                          style={{ width: 24, height: 24 }}
-                        />
-                      ) : (
-                        <Image
-                          source={option.icon as any}
-                          style={{ width: 24, height: 24 }}
-                          resizeMode="contain"
-                        />
-                      )}
-                    </View>
                     <View className="ml-3 flex-1">
                       <Text className="font-semibold">{option.name}</Text>
                       {option.description && (
