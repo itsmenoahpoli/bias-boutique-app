@@ -1,5 +1,5 @@
 import { $baseApi } from "@/api";
-import { CartItem } from "@/store/cart.store";
+import { CartItem, useCartStore } from "@/store/cart.store";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TStackParamsList } from "@/types/navigation";
@@ -26,6 +26,7 @@ interface OrderResponse {
 
 export const useOrdersService = () => {
   const navigation = useNavigation<StackNavigationProp<TStackParamsList>>();
+  const { removeFromCart } = useCartStore();
 
   const createOrder = async (
     customerEmail: string,
@@ -66,6 +67,10 @@ export const useOrdersService = () => {
 
       if (!response.data.payment_link) {
         throw new Error("No payment URL received from server");
+      }
+
+      for (const item of cartItems) {
+        await removeFromCart(item.id);
       }
 
       return response.data;

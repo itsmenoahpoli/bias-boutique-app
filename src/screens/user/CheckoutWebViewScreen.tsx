@@ -33,7 +33,7 @@ export const CheckoutWebViewScreen: React.FC<TScreenProps> = ({
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-gray-100">
       {/* Header */}
-      <View className="bg-purple-900 px-4 py-4 flex-row items-center">
+      <View className="bg-purple-900 px-4 pb-4 pt-10 flex-row items-center">
         <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
           <ArrowLeft size={24} color="white" />
         </TouchableOpacity>

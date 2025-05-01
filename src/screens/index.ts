@@ -15,6 +15,7 @@ export { CartScreen } from "@/screens/user/CartScreen";
 export { OrdersScreen } from "@/screens/user/OrdersScreen";
 export { WalletScreen } from "@/screens/user/WalletScreen";
 export { ProfileScreen } from "@/screens/user/ProfileScreen";
+export { AccountSettingsScreen } from "@/screens/user/AccountSettingsScreen";
 
 /**
  * Shop screens

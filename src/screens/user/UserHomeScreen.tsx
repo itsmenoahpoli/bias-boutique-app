@@ -152,8 +152,6 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
               </Text>
             </View>
             <View className="flex-row space-x-3">
-              <Ionicons name="notifications-outline" size={24} color="white" />
-              <MaterialIcons name="favorite-border" size={24} color="white" />
               <Ionicons name="settings-outline" size={24} color="white" />
             </View>
           </View>
