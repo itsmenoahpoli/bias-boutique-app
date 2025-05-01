@@ -45,6 +45,7 @@ interface Order {
 
 const orderStatuses = [
   "All Orders",
+  "To Pay",
   "To Ship",
   "To Receive",
   "To Review",
@@ -69,8 +70,11 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    // If selectedOrderId is provided, find and show that order's details
-    if (selectedOrderId && orders.length > 0) {
+    // If selectedOrderId is provided and starts with "status:", extract the status
+    if (selectedOrderId && selectedOrderId.startsWith("status:")) {
+      const status = selectedOrderId.replace("status:", "");
+      setSelectedStatus(status);
+    } else if (selectedOrderId && orders.length > 0) {
       const order = orders.find((order) => order.id === selectedOrderId);
       if (order) {
         setSelectedOrder(order);
@@ -122,23 +126,40 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
 
   // Filter orders based on selected status
   const filteredOrders = useMemo(() => {
-    if (selectedStatus === "All Orders" || selectedStatus === "To Ship")
-      return orders;
+    let result = [];
 
-    return orders.filter((order) => {
-      switch (selectedStatus) {
-        case "To Pay":
-          return order.payment_status?.toLowerCase() === "pending";
-        case "To Receive":
-          return order.shipment_status?.toLowerCase() === "shipped";
-        case "To Review":
-          return order.shipment_status?.toLowerCase() === "delivered";
-        case "Returns/Cancels":
-          return order.shipment_status?.toLowerCase() === "cancelled";
-        default:
-          return true;
-      }
-    });
+    if (selectedStatus === "All Orders") {
+      result = [...orders];
+    } else {
+      result = orders.filter((order) => {
+        switch (selectedStatus) {
+          case "To Pay":
+            return order.payment_status?.toLowerCase() === "pending";
+          case "To Ship":
+            return (
+              order.shipment_status?.toLowerCase() === "processing" ||
+              order.shipment_status?.toLowerCase() === "pending"
+            );
+          case "To Receive":
+            return order.shipment_status?.toLowerCase() === "shipped";
+          case "To Review":
+            return order.shipment_status?.toLowerCase() === "delivered";
+          case "Returns/Cancels":
+            return (
+              order.shipment_status?.toLowerCase() === "cancelled" ||
+              order.shipment_status?.toLowerCase() === "returned"
+            );
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Reverse the array to show latest orders first (assuming createdAt is in chronological order)
+    return result.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }, [orders, selectedStatus]);
 
   const formatDate = (dateString: string) => {

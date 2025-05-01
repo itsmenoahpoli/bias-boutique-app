@@ -32,7 +32,11 @@ type Message = {
 export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const user = useUserStore((state) => state.user);
   const [messages, setMessages] = useState<Message[]>([
-    { id: "1", text: "Hello! How can I help you today?", isUser: false },
+    {
+      id: "1",
+      text: "Hello I'm your AI chat assistant today! How can I help you today?",
+      isUser: false,
+    },
   ]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -109,7 +113,7 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
               setMessages([
                 {
                   id: "1",
-                  text: "Hello! How can I help you today?",
+                  text: "Hello I'm your AI chat assistant today! How can I help you today?",
                   isUser: false,
                 },
               ])
@@ -129,7 +133,7 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
               {!item.isUser && (
                 <Image
                   source={BRAND_LOGO}
-                  className="w-8 h-8 rounded-full mr-2 self-end"
+                  className="w-14 h-14 rounded-full mr-2 self-end"
                   resizeMode="contain"
                 />
               )}

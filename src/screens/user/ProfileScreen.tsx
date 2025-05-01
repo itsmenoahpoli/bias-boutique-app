@@ -81,11 +81,30 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
         <View className="mt-6">
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-white font-semibold text-lg">My Orders</Text>
-            <Text className="text-pink-400">View All Orders &gt;</Text>
+            <Text
+              className="text-pink-200"
+              onPress={() =>
+                navigation.navigate("ORDERS_SCREEN", {
+                  selectedOrderId: "status:All Orders",
+                  showDetails: false,
+                })
+              }
+            >
+              View All Orders &gt;
+            </Text>
           </View>
           <View className="flex-row justify-between">
             {iconList.map((item, idx) => (
-              <TouchableOpacity key={idx} className="items-center">
+              <TouchableOpacity
+                key={idx}
+                className="items-center"
+                onPress={() => {
+                  navigation.navigate("ORDERS_SCREEN", {
+                    selectedOrderId: `status:${item.label}`,
+                    showDetails: false,
+                  });
+                }}
+              >
                 <View className="w-12 h-12 bg-pink-500/20 rounded-full justify-center items-center mb-1">
                   <Ionicons name={item.icon as any} size={24} color="#fff" />
                 </View>
