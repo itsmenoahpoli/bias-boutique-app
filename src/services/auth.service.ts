@@ -87,7 +87,7 @@ export const useAuthService = () => {
     try {
       const response = await $baseApi.post(`/auth/update-account/${userId}`, {
         ...payload,
-        contact_number: payload.contact_no,
+        contact_no: payload.contact_no,
       });
 
       const user = useUserStore.getState().user;

@@ -1,4 +1,5 @@
 export { WelcomeScreen } from "@/screens/WelcomeScreen";
+export { PaymentScreen } from "@/screens/PaymentScreen";
 
 /**
  * Auth screens

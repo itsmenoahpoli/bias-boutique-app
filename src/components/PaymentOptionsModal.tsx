@@ -51,16 +51,16 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
           name: "Maya",
           description: "Pay with your Maya account",
         },
-        {
-          id: "grabpay",
-          name: "GrabPay",
-          description: "Pay with your GrabPay account",
-        },
-        {
-          id: "shopeepay",
-          name: "ShopeePay",
-          description: "Pay with your ShopeePay account",
-        },
+        // {
+        //   id: "grabpay",
+        //   name: "GrabPay",
+        //   description: "Pay with your GrabPay account",
+        // },
+        // {
+        //   id: "shopeepay",
+        //   name: "ShopeePay",
+        //   description: "Pay with your ShopeePay account",
+        // },
       ],
     },
     {
@@ -88,26 +88,26 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
         },
       ],
     },
-    {
-      title: "over-the-counter",
-      options: [
-        {
-          id: "7-11",
-          name: "7-Eleven",
-          description: "Pay at any 7-Eleven branch",
-        },
-        {
-          id: "cebuana",
-          name: "Cebuana Lhuillier",
-          description: "Pay at any Cebuana Lhuillier branch",
-        },
-        {
-          id: "lbc",
-          name: "LBC",
-          description: "Pay at any LBC branch",
-        },
-      ],
-    },
+    // {
+    //   title: "over-the-counter",
+    //   options: [
+    //     {
+    //       id: "7-11",
+    //       name: "7-Eleven",
+    //       description: "Pay at any 7-Eleven branch",
+    //     },
+    //     {
+    //       id: "cebuana",
+    //       name: "Cebuana Lhuillier",
+    //       description: "Pay at any Cebuana Lhuillier branch",
+    //     },
+    //     {
+    //       id: "lbc",
+    //       name: "LBC",
+    //       description: "Pay at any LBC branch",
+    //     },
+    //   ],
+    // },
     {
       title: "qr",
       options: [

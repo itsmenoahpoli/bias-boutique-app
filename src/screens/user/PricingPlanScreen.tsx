@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
+import { PaymentOptionsModal } from "@/components/PaymentOptionsModal";
 import { type TStackParamsList } from "@/types/navigation";
 
 type TScreenProps = {
@@ -25,9 +26,55 @@ const plans = [
 
 export const PricingPlanScreen: React.FC<TScreenProps> = (props) => {
   const [selectedPlan, setSelectedPlan] = React.useState<string | null>("free");
+  const [showPaymentOptions, setShowPaymentOptions] = React.useState(false);
 
-  const handleRedirectToHome = () => {
-    props.navigation.replace("USERHOME_SCREEN");
+  const handleSelectPayment = () => {
+    setShowPaymentOptions(true);
+  };
+
+  const handleClosePaymentOptions = () => {
+    setShowPaymentOptions(false);
+  };
+
+  const handleSelectPaymentOption = (option: any) => {
+    const selectedPlanData = plans.find((plan) => plan.id === selectedPlan);
+    let amount = 0;
+    let planTitle = "";
+
+    if (selectedPlanData) {
+      if (selectedPlan === "free") {
+        amount = 1788;
+      } else if (selectedPlan === "monthly") {
+        amount = 149;
+      } else if (selectedPlan === "annual") {
+        amount = 894;
+      }
+
+      // Get the title of the selected plan
+      planTitle = selectedPlanData.title;
+    }
+
+    const paymentType = determinePaymentType(option.id);
+
+    setShowPaymentOptions(false);
+
+    props.navigation.navigate("PAYMENT_SCREEN", {
+      type: paymentType,
+      channel: option.id,
+      amount: amount,
+      planTitle: planTitle,
+    });
+  };
+
+  // Helper function to determine payment type
+  const determinePaymentType = (
+    channelId: string
+  ): "e-wallet" | "credit-card" => {
+    // List of e-wallet options
+    const eWalletOptions = ["gcash", "maya", "grabpay", "shopeepay"];
+
+    // If channelId is in eWalletOptions, return "e-wallet", otherwise return "credit-card"
+    return eWalletOptions.includes(channelId) ? "e-wallet" : "credit-card";
   };
 
   return (
@@ -75,12 +122,18 @@ export const PricingPlanScreen: React.FC<TScreenProps> = (props) => {
 
         <TouchableOpacity
           className="mt-6 bg-white/20 px-6 py-3 rounded-xl"
-          onPress={handleRedirectToHome}
+          onPress={handleSelectPayment}
         >
           <Text className="text-white text-lg font-semibold">
             CONTINUE TO PURCHASE
           </Text>
         </TouchableOpacity>
+
+        <PaymentOptionsModal
+          visible={showPaymentOptions}
+          onClose={handleClosePaymentOptions}
+          onSelectPaymentOption={handleSelectPaymentOption}
+        />
       </View>
     </GradientLayout>
   );

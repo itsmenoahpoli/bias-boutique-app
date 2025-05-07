@@ -18,7 +18,7 @@ export const WelcomeScreen: React.FC<TScreenProps> = (props) => {
       if (user) {
         props.navigation.replace("USERHOME_SCREEN");
       } else {
-        props.navigation.replace("LOGIN_SCREEN");
+        props.navigation.replace("PRICINGPLAN_SCREEN");
       }
     }, 2500);
   }, [user]);

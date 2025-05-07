@@ -6,6 +6,12 @@ export type TStackParamsList = {
     type: string;
   };
   PRICINGPLAN_SCREEN: undefined;
+  PAYMENT_SCREEN: {
+    type: "e-wallet" | "credit-card";
+    channel: string;
+    amount: number;
+    planTitle: string;
+  };
   USERHOME_SCREEN: undefined;
   USERHOME2_SCREEN: undefined;
   ORDERS_SCREEN: {

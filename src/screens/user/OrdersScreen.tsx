@@ -799,9 +799,6 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
                   </View>
 
                   <View className="mt-3 flex-row justify-between">
-                    <TouchableOpacity className="bg-purple-500/30 px-4 py-2 rounded-lg">
-                      <Text className="text-white">Track Order</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity
                       className="bg-white/20 px-4 py-2 rounded-lg"
                       onPress={() => handleViewDetails(order)}
