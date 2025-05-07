@@ -32,13 +32,10 @@ export const useAuthService = () => {
       console.log("loginUser-payload", payload);
       const response = await $baseApi.post("/auth/signin", payload);
 
-      console.log(response.data.data);
-
       if (!response.data.data.user) {
         throw new Error("No user data received from server");
       }
 
-      // Store user data in the store (now handles AsyncStorage internally)
       await setUser(response.data.data.user);
       return response.data;
     } catch (error) {

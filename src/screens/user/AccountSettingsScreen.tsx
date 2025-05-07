@@ -25,6 +25,8 @@ export const AccountSettingsScreen: React.FC<TScreenProps> = ({
   const { updateUserAccount } = useAuthService();
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log("AccountSettingsScreen", user);
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",

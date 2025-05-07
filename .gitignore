@@ -4,9 +4,7 @@ node_modules
 .vscode
 *.log
 *.env
-<<<<<<< Updated upstream
 
 android
-=======
-.env.local
->>>>>>> Stashed changes
+
+.env
