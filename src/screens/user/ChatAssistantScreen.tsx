@@ -9,6 +9,8 @@ import {
   FlatList,
   ActivityIndicator,
   Image,
+  Animated,
+  Easing,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
@@ -27,6 +29,45 @@ type Message = {
   id: string;
   text: string;
   isUser: boolean;
+  animationComplete?: boolean;
+};
+
+// Typing animation component
+const TypingAnimation: React.FC<{ text: string; onComplete: () => void }> = ({
+  text,
+  onComplete,
+}) => {
+  const [displayedText, setDisplayedText] = useState("");
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedText("");
+
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+    const typingInterval = setInterval(() => {
+      if (index < text.length) {
+        setDisplayedText((current) => current + text.charAt(index));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+        setTimeout(() => onComplete(), 300);
+      }
+    }, 15);
+
+    return () => clearInterval(typingInterval);
+  }, [text]);
+
+  return (
+    <Animated.Text style={{ opacity }} className="text-white">
+      {displayedText}
+    </Animated.Text>
+  );
 };
 
 export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
@@ -36,13 +77,13 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
       id: "1",
       text: "Hello I'm your AI chat assistant today! How can I help you today?",
       isUser: false,
+      animationComplete: true,
     },
   ]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
-  // Auto-scroll when messages change
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
       setTimeout(() => {
@@ -51,6 +92,14 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
     }
   }, [messages]);
 
+  const handleMessageAnimationComplete = (messageId: string) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg.id === messageId ? { ...msg, animationComplete: true } : msg
+      )
+    );
+  };
+
   const handleSend = async () => {
     if (inputText.trim() === "") return;
 
@@ -58,6 +107,7 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
       id: Date.now().toString(),
       text: inputText,
       isUser: true,
+      animationComplete: true,
     };
     setMessages((prev) => [...prev, userMessage]);
     setInputText("");
@@ -73,6 +123,7 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
         id: (Date.now() + 1).toString(),
         text: response,
         isUser: false,
+        animationComplete: false,
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -80,6 +131,7 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
         id: (Date.now() + 1).toString(),
         text: "Sorry, I couldn't process your request. Please try again.",
         isUser: false,
+        animationComplete: false,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -115,6 +167,7 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   id: "1",
                   text: "Hello I'm your AI chat assistant today! How can I help you today?",
                   isUser: false,
+                  animationComplete: true,
                 },
               ])
             }
@@ -142,7 +195,14 @@ export const ChatAssistantScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   item.isUser ? "bg-blue-600 ml-auto" : "bg-purple-600"
                 }`}
               >
-                <Text className="text-white">{item.text}</Text>
+                {!item.isUser && !item.animationComplete ? (
+                  <TypingAnimation
+                    text={item.text}
+                    onComplete={() => handleMessageAnimationComplete(item.id)}
+                  />
+                ) : (
+                  <Text className="text-white">{item.text}</Text>
+                )}
               </View>
               {item.isUser && (
                 <View className="w-8 h-8 rounded-full ml-2 self-end bg-blue-400 items-center justify-center">
