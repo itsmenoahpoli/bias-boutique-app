@@ -5,6 +5,7 @@ import { GradientLayout } from "@/components";
 import { BRAND_LOGO } from "@/images";
 import { type TStackParamsList } from "@/types/navigation";
 import { useUserStore } from "@/store/user.store";
+import { useSubscriptionStore } from "@/store/subscription.store";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "WELCOME_SCREEN">;
@@ -12,15 +13,29 @@ type TScreenProps = {
 
 export const WelcomeScreen: React.FC<TScreenProps> = (props) => {
   const user = useUserStore((state) => state.user);
+  const hasActiveSubscription = useSubscriptionStore(
+    (state) => state.hasActiveSubscription
+  );
 
   React.useEffect(() => {
-    setTimeout(() => {
-      if (user) {
-        props.navigation.replace("USERHOME_SCREEN");
-      } else {
-        props.navigation.replace("PRICINGPLAN_SCREEN");
-      }
-    }, 2500);
+    const checkSubscriptionAndRedirect = async () => {
+      const hasSubscription = await hasActiveSubscription();
+
+      console.log("user", user);
+      console.log("hasSubscription", hasSubscription);
+
+      setTimeout(() => {
+        if (user === null) {
+          props.navigation.replace("LOGIN_SCREEN");
+        } else if (user && hasSubscription) {
+          props.navigation.replace("USERHOME_SCREEN");
+        } else {
+          props.navigation.replace("PRICINGPLAN_SCREEN");
+        }
+      }, 2500);
+    };
+
+    checkSubscriptionAndRedirect();
   }, [user]);
 
   return (
