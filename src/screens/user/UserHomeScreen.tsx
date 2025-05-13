@@ -79,7 +79,7 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
       try {
         switch (page) {
           case "shopping-cart":
-            navigation.navigate("CART_SCREEN");
+            navigation.navigate("CART_SCREEN", {});
             break;
           case "orders":
             navigation.navigate("PRODUCT_COMPARE_SCREEN");

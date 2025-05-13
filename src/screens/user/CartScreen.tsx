@@ -167,10 +167,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const getAssetUrl = (image: string | null) => {
     if (!image) return PRODUCT_PLACEHOLDER;
 
-    console.log(
-      "image",
-      "https://bias-boutique-backend-production.up.railway.app" + image
-    );
     return "https://bias-boutique-backend-production.up.railway.app" + image;
   };
 
