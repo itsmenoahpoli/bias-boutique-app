@@ -17,6 +17,8 @@ import { type TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useUserStore } from "@/store/user.store";
 import { useWalletStore } from "@/store/wallet.store";
+import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "PROFILE_SCREEN">;
@@ -46,6 +48,8 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const [isPaymentOptionsVisible, setIsPaymentOptionsVisible] = useState(false);
   const [isPaymentInputVisible, setIsPaymentInputVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const [isPhotoOptionsVisible, setIsPhotoOptionsVisible] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [cashInAmount, setCashInAmount] = useState(0);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<any>(null);
   const [paymentInput, setPaymentInput] = useState("");
@@ -53,7 +57,84 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     loadBalance();
+    loadProfilePhoto();
   }, []);
+
+  const loadProfilePhoto = async () => {
+    try {
+      const savedPhoto = await AsyncStorage.getItem("profilePhoto");
+      if (savedPhoto) {
+        setProfilePhoto(savedPhoto);
+      }
+    } catch (error) {
+      console.error("Error loading profile photo:", error);
+    }
+  };
+
+  const handlePhotoUpload = async () => {
+    try {
+      const permission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        alert("Permission to access camera roll is required!");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0].base64) {
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        await AsyncStorage.setItem("profilePhoto", base64Image);
+        setProfilePhoto(base64Image);
+        setIsPhotoOptionsVisible(false);
+      }
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        alert("Permission to access camera is required!");
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0].base64) {
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        await AsyncStorage.setItem("profilePhoto", base64Image);
+        setProfilePhoto(base64Image);
+        setIsPhotoOptionsVisible(false);
+      }
+    } catch (error) {
+      console.error("Error taking photo:", error);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    try {
+      await AsyncStorage.removeItem("profilePhoto");
+      setProfilePhoto(null);
+      setIsPhotoOptionsVisible(false);
+    } catch (error) {
+      console.error("Error removing photo:", error);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -97,6 +178,16 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
       default:
         return "Enter payment details";
     }
+  };
+
+  const getUserInitials = () => {
+    if (!user?.name) return "G";
+    return user.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const renderPaymentInputModal = () => {
@@ -185,6 +276,54 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
     );
   };
 
+  const renderPhotoOptionsModal = () => {
+    return (
+      <Modal
+        visible={isPhotoOptionsVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsPhotoOptionsVisible(false)}
+      >
+        <View className="flex-1 justify-end items-center bg-black/50">
+          <View className="bg-white w-full rounded-t-xl p-6">
+            <Text className="text-xl font-bold mb-4">Profile Photo</Text>
+            <TouchableOpacity
+              onPress={handleTakePhoto}
+              className="flex-row items-center py-3 border-b border-gray-200"
+            >
+              <Ionicons name="camera" size={24} color="#000" />
+              <Text className="ml-3 text-base">Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handlePhotoUpload}
+              className="flex-row items-center py-3 border-b border-gray-200"
+            >
+              <Ionicons name="images" size={24} color="#000" />
+              <Text className="ml-3 text-base">Choose from Library</Text>
+            </TouchableOpacity>
+            {profilePhoto && (
+              <TouchableOpacity
+                onPress={handleRemovePhoto}
+                className="flex-row items-center py-3"
+              >
+                <Ionicons name="trash" size={24} color="#ff4444" />
+                <Text className="ml-3 text-base text-red-500">
+                  Remove Photo
+                </Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => setIsPhotoOptionsVisible(false)}
+              className="mt-4 bg-gray-200 py-3 rounded-md"
+            >
+              <Text className="text-center font-medium">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <GradientLayout>
       <ScrollView className="flex-1 px-4 py-6">
@@ -205,10 +344,20 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
         {/* User Info */}
         <View className="items-center">
-          <Image
-            source={{ uri: "https://via.placeholder.com/80" }}
-            className="w-20 h-20 rounded-full"
-          />
+          <TouchableOpacity onPress={() => setIsPhotoOptionsVisible(true)}>
+            {profilePhoto ? (
+              <Image
+                source={{ uri: profilePhoto }}
+                className="w-20 h-20 rounded-full"
+              />
+            ) : (
+              <View className="w-20 h-20 rounded-full bg-pink-500 justify-center items-center">
+                <Text className="text-white text-2xl font-bold">
+                  {getUserInitials()}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
           <Text className="text-white font-bold text-xl mt-2">
             {user?.name || "Guest"}
           </Text>
@@ -328,6 +477,9 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
       {/* Success Modal */}
       {renderSuccessModal()}
+
+      {/* Photo Options Modal */}
+      {renderPhotoOptionsModal()}
     </GradientLayout>
   );
 };
