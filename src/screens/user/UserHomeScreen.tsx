@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Platform,
+  Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ShoppingCart, ClipboardList, Wallet, User } from "lucide-react-native";
@@ -45,8 +46,59 @@ const categories = [
   { label: "View All", icon: Grid },
 ];
 
+const specialOffers = [
+  {
+    id: 1,
+    title: "11.11 Free Shipping Special",
+    description:
+      "Enjoy free shipping on all your orders during our special 11.11 promotion!",
+    validUntil: "November 15th",
+    details: [
+      "Valid for all products",
+      "No minimum purchase required",
+      "Limited time offer",
+    ],
+  },
+  {
+    id: 2,
+    title: "Black Friday Sale",
+    description:
+      "Get up to 50% off on selected items during our Black Friday event!",
+    validUntil: "November 24th",
+    details: [
+      "Up to 50% off on selected items",
+      "Early bird specials available",
+      "Limited stock",
+    ],
+  },
+  {
+    id: 3,
+    title: "New User Discount",
+    description: "First-time shoppers get 15% off on their first purchase!",
+    validUntil: "December 31st",
+    details: [
+      "15% off first purchase",
+      "No minimum spend",
+      "One-time use only",
+    ],
+  },
+  {
+    id: 4,
+    title: "Bundle Deals",
+    description: "Buy 2 or more items and get additional discounts!",
+    validUntil: "Ongoing",
+    details: [
+      "Buy 2 get 10% off",
+      "Buy 3 get 15% off",
+      "Buy 4 or more get 20% off",
+    ],
+  },
+];
+
 export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const [hasError, setHasError] = useState(false);
+  const [isSpecialOffersModalVisible, setIsSpecialOffersModalVisible] =
+    useState(false);
   const user = useUserStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -196,9 +248,16 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
               <Text className="text-white font-bold text-lg">
                 Special Offers
               </Text>
-              <Text className="text-blue-300">See All</Text>
+              <TouchableOpacity
+                onPress={() => setIsSpecialOffersModalVisible(true)}
+              >
+                <Text className="text-blue-300">See All</Text>
+              </TouchableOpacity>
             </View>
-            <View className="bg-purple-500 rounded-2xl p-4">
+            <TouchableOpacity
+              className="bg-purple-500 rounded-2xl p-4"
+              onPress={() => setIsSpecialOffersModalVisible(true)}
+            >
               <View>
                 <Text className="text-white font-bold text-xl">11.11</Text>
                 <Text className="text-white text-sm">
@@ -208,8 +267,64 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   Get a free shipping for every checkout. Only valid until 11-15
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
+
+          {/* Special Offers Modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isSpecialOffersModalVisible}
+            onRequestClose={() => setIsSpecialOffersModalVisible(false)}
+          >
+            <View className="flex-1 justify-center items-center bg-black/50">
+              <View className="bg-purple-900 m-4 rounded-2xl p-6 w-[90%] max-h-[80%]">
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text className="text-white font-bold text-xl">
+                    Special Offers
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setIsSpecialOffersModalVisible(false)}
+                  >
+                    <Ionicons name="close" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {specialOffers.map((offer) => (
+                    <View
+                      key={offer.id}
+                      className="bg-purple-500 rounded-xl p-4 mb-4"
+                    >
+                      <Text className="text-white font-bold text-xl">
+                        {offer.title}
+                      </Text>
+                      <Text className="text-white mt-2">
+                        {offer.description}
+                      </Text>
+                      <View className="mt-2">
+                        {offer.details.map((detail, index) => (
+                          <Text key={index} className="text-white">
+                            • {detail}
+                          </Text>
+                        ))}
+                      </View>
+                      <Text className="text-white mt-4 text-sm">
+                        Valid until: {offer.validUntil}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+
+                <TouchableOpacity
+                  className="bg-purple-500 rounded-xl p-4 items-center mt-4"
+                  onPress={() => setIsSpecialOffersModalVisible(false)}
+                >
+                  <Text className="text-white font-semibold">Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
           {/* Categories */}
           <ScrollView
