@@ -21,7 +21,18 @@ interface OrderDTO {
 }
 
 interface OrderResponse {
-  payment_link: string;
+  id: string;
+  order_number: string;
+  customer_email: string;
+  cart_items: CartItemDTO[];
+  total_amount: number;
+  voucher: string | null;
+  createdAt: string;
+  updatedAt: string;
+  payment_status?: string;
+  payment_type?: string;
+  checkout_date?: string;
+  shipment_status?: string;
 }
 
 export const useOrdersService = () => {
@@ -78,11 +89,11 @@ export const useOrdersService = () => {
         orderPayload
       );
 
-      console.log("response.data", response.data);
+      // console.log("response.data", response.data);
 
-      if (!response.data.payment_link) {
-        throw new Error("No payment URL received from server");
-      }
+      // if (!response.data.payment_link) {
+      //   throw new Error("No payment URL received from server");
+      // }
 
       for (const item of cartItems) {
         await removeFromCart(item.id);

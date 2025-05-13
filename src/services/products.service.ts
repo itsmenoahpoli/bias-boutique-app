@@ -11,6 +11,7 @@ export type Product = {
   price: number;
   discounted_price: number;
   stocks_qty: number;
+  image: string | null;
   is_discounted: boolean;
   is_pulished: boolean;
   createdAt: string;

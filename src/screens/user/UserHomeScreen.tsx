@@ -82,7 +82,7 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
             navigation.navigate("CART_SCREEN");
             break;
           case "orders":
-            navigation.navigate("ORDERS_SCREEN");
+            navigation.navigate("PRODUCT_COMPARE_SCREEN");
             break;
           case "mainhome":
             // For now, do nothing until Main Home is implemented
@@ -181,6 +181,14 @@ export const UserHomeScreen: React.FC<TScreenProps> = ({ navigation }) => {
               <Ionicons name="arrow-forward" size={20} color="white" />
             </TouchableOpacity>
           </View>
+
+          {/* Product Compare Button */}
+          <TouchableOpacity
+            className="bg-purple-500/40 rounded-xl p-3 items-center mb-4"
+            onPress={() => navigation.navigate("PRODUCT_COMPARE_SCREEN")}
+          >
+            <Text className="text-white font-semibold">Product Compare</Text>
+          </TouchableOpacity>
 
           {/* Special Offers */}
           <View className="mb-4">

@@ -27,3 +27,4 @@ export { ChatAssistantScreen } from "@/screens/user/ChatAssistantScreen";
 export { ProductsScreen } from "@/screens/user/shop/ProductsScreen";
 export { ViewProductDetailScreen } from "@/screens/user/shop/ViewProductDetailScreen";
 export { CheckoutWebViewScreen } from "@/screens/user/CheckoutWebViewScreen";
+export { ProductCompareScreen } from "@/screens/user/shop/ProductCompareScreen";

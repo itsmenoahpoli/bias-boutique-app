@@ -15,6 +15,7 @@ type CartStore = {
   removeFromCart: (productId: string) => Promise<void>; // Changed to string
   updateQuantity: (productId: string, quantity: number) => Promise<void>; // Changed to string
   loadCart: () => Promise<void>;
+  clearCart: () => Promise<void>;
 };
 
 export const useCartStore = create<CartStore>((set, get) => ({
@@ -63,5 +64,10 @@ export const useCartStore = create<CartStore>((set, get) => ({
     } catch (error) {
       console.error("Error loading cart:", error);
     }
+  },
+
+  clearCart: async () => {
+    set({ items: [] });
+    await AsyncStorage.removeItem("cart");
   },
 }));

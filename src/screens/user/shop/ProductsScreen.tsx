@@ -16,6 +16,7 @@ import { ArrowLeft, ShoppingCart } from "lucide-react-native";
 import { PRODUCT_PLACEHOLDER } from "@/images";
 import { useCartStore } from "@/store/cart.store";
 import { useProductsService, type Product } from "@/services/products.service";
+import { getAnimatedStyle } from "react-native-reanimated";
 
 type ProductsScreenNavigationProp = StackNavigationProp<
   TStackParamsList,
@@ -41,6 +42,11 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
     fetchProducts();
   }, [category]);
 
+  const getAssetUrl = (image: string | null) => {
+    if (!image) return PRODUCT_PLACEHOLDER;
+    return "https://bias-boutique-backend-production.up.railway.app" + image;
+  };
+
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
@@ -64,7 +70,7 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
     navigation.navigate("VIEW_PRODUCT_DETAIL_SCREEN", {
       product: {
         ...product,
-        image: PRODUCT_PLACEHOLDER,
+        image: getAssetUrl(product.image),
       },
     });
   };
@@ -92,7 +98,7 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
           },
           {
             text: "View Cart",
-            onPress: () => navigation.navigate("CART_SCREEN"),
+            onPress: () => navigation.navigate("CART_SCREEN", {}),
           },
         ]
       );
@@ -114,7 +120,9 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
           <ArrowLeft color="white" />
         </TouchableOpacity>
         <Text className="text-white text-lg font-semibold">{category}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("CART_SCREEN")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("CART_SCREEN", {})}
+        >
           <ShoppingCart color="white" />
         </TouchableOpacity>
       </View>
@@ -133,7 +141,9 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
                 onPress={() => handleProductPress(product)}
               >
                 <Image
-                  source={PRODUCT_PLACEHOLDER}
+                  source={{
+                    uri: getAssetUrl(product.image) || PRODUCT_PLACEHOLDER,
+                  }}
                   className="w-full h-40"
                   resizeMode="cover"
                 />

@@ -10,8 +10,10 @@ import {
   Platform,
   StatusBar,
   Alert,
+  Modal,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
 import { GradientLayout } from "@/components";
 import { TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,29 +21,43 @@ import { useCartStore } from "@/store/cart.store";
 import { useNavigation } from "@react-navigation/native";
 import { useOrdersService } from "@/services";
 import { useUserStore } from "@/store/user.store";
+import { PaymentOptionsModal } from "@/components";
+import { PRODUCT_PLACEHOLDER } from "@/images";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "CART_SCREEN">;
+  route: RouteProp<TStackParamsList, "CART_SCREEN">;
 };
 
-export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
+export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const {
     items,
     loadCart,
     updateQuantity: updateCartQuantity,
     removeFromCart,
+    clearCart,
   } = useCartStore();
   const ordersService = useOrdersService();
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set()); // Changed from number to string
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const { user } = useUserStore();
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [showPaymentInput, setShowPaymentInput] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState<any>(null);
+  const [paymentInput, setPaymentInput] = useState("");
 
   useEffect(() => {
     loadCart();
   }, []);
 
+  useEffect(() => {
+    if (route.params?.autoCheckout && items.length > 0) {
+      setSelectedItems(new Set(items.map((item) => item.id)));
+    }
+  }, [route.params?.autoCheckout, items]);
+
   const toggleSelect = (id: string) => {
-    // Changed from number to string
     setSelectedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
@@ -54,7 +70,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
   };
 
   const updateQuantity = async (id: string, delta: number) => {
-    // Changed from number to string
     const item = items.find((item) => item.id === id);
     if (item) {
       const newQuantity = Math.max(1, item.quantity + delta);
@@ -76,7 +91,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
       .reduce((sum, item) => {
         let numericPrice: number;
         if (typeof item.price === "string") {
-          // Remove '₱' and ',' then convert to number
           numericPrice = parseFloat(item.price.replace(/[₱,]/g, ""));
         } else {
           numericPrice = item.price;
@@ -88,7 +102,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const handleCheckout = async () => {
     setIsCheckoutLoading(true);
     try {
-      // Get selected items from the cart
       const selectedCartItems = items.filter((item) =>
         selectedItems.has(item.id)
       );
@@ -98,13 +111,48 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
         return;
       }
 
+      setShowPaymentOptions(true);
+    } catch (error) {
+      Alert.alert(
+        "Checkout Error",
+        error instanceof Error ? error.message : "Failed to process checkout"
+      );
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
+  const handleSelectPaymentOption = async (option: any) => {
+    setSelectedPaymentOption(option);
+    setShowPaymentOptions(false);
+    setShowPaymentInput(true);
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!paymentInput.trim()) {
+      Alert.alert("Error", "Please enter payment details");
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    try {
+      const selectedCartItems = items.filter((item) =>
+        selectedItems.has(item.id)
+      );
+
       const orderResponse = await ordersService.createOrder(
         user?.email || "",
         selectedCartItems
       );
 
-      navigation.navigate("CHECKOUT_WEBVIEW", {
-        url: orderResponse.payment_link,
+      setShowPaymentInput(false);
+      setShowSuccessModal(true);
+      clearCart();
+
+      // Navigate to OrdersScreen with the created order's ID
+      navigation.navigate("ORDERS_SCREEN", {
+        selectedOrderId: orderResponse.id,
+        showDetails: true,
       });
     } catch (error) {
       Alert.alert(
@@ -114,6 +162,128 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
     } finally {
       setIsCheckoutLoading(false);
     }
+  };
+
+  const getAssetUrl = (image: string | null) => {
+    if (!image) return PRODUCT_PLACEHOLDER;
+
+    console.log(
+      "image",
+      "https://bias-boutique-backend-production.up.railway.app" + image
+    );
+    return "https://bias-boutique-backend-production.up.railway.app" + image;
+  };
+
+  const renderPaymentInputModal = () => {
+    if (!selectedPaymentOption) return null;
+
+    const getInputPlaceholder = () => {
+      switch (selectedPaymentOption.id) {
+        case "gcash":
+        case "maya":
+          return "Enter mobile number";
+        case "bpi":
+        case "chinabank":
+        case "rcbc":
+        case "unionbank":
+          return "Enter account number";
+        case "qrph":
+          return "Enter reference number";
+        default:
+          return "Enter payment details";
+      }
+    };
+
+    return (
+      <Modal
+        visible={showPaymentInput}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowPaymentInput(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-white p-6 rounded-xl w-11/12 max-w-md">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-xl font-bold">
+                {selectedPaymentOption.name}
+              </Text>
+              <Pressable onPress={() => setShowPaymentInput(false)}>
+                <Ionicons name="close" size={24} color="#000" />
+              </Pressable>
+            </View>
+
+            <Text className="text-gray-700 mb-2">Payment Details</Text>
+            <TextInput
+              className="border border-gray-300 rounded-md p-3 mb-6"
+              placeholder={getInputPlaceholder()}
+              value={paymentInput}
+              onChangeText={setPaymentInput}
+              keyboardType={
+                selectedPaymentOption.id.includes("bank")
+                  ? "number-pad"
+                  : "default"
+              }
+            />
+
+            <View className="flex-row justify-end space-x-3">
+              <Pressable
+                onPress={() => setShowPaymentInput(false)}
+                className="bg-gray-200 py-3 px-5 rounded-md"
+              >
+                <Text>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handlePaymentSubmit}
+                disabled={isCheckoutLoading}
+                className="bg-blue-500 py-3 px-5 rounded-md"
+              >
+                <Text className="text-white font-medium">
+                  {isCheckoutLoading ? "Processing..." : "Submit Payment"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  const renderSuccessModal = () => {
+    return (
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setShowSuccessModal(false);
+          navigation.goBack();
+        }}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-white p-6 rounded-xl w-11/12 max-w-md items-center">
+            <View className="w-16 h-16 bg-green-100 rounded-full justify-center items-center mb-4">
+              <Ionicons name="checkmark" size={32} color="#22C55E" />
+            </View>
+            <Text className="text-green-600 text-xl font-bold mb-4">
+              Payment Successful!
+            </Text>
+            <Text className="text-gray-700 mb-6 text-center">
+              Your order has been placed successfully. Thank you for shopping
+              with us!
+            </Text>
+            <Pressable
+              onPress={() => {
+                setShowSuccessModal(false);
+                navigation.goBack();
+              }}
+              className="bg-blue-500 py-3 px-8 rounded-md"
+            >
+              <Text className="text-white font-medium">Done</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   return (
@@ -134,7 +304,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
               <Text className="text-white font-semibold text-lg">
                 Shopping Cart ({items.length})
               </Text>
-              <Text className="text-white text-sm p-2">Edit</Text>
+              <Text>&nbsp;</Text>
             </View>
           </View>
 
@@ -156,7 +326,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
             ) : (
               items.map((item, index) => (
                 <View
-                  key={`${item.id}-${index}`} // Added index as fallback
+                  key={`${item.id}-${index}`}
                   className="flex-row bg-white/90 rounded-xl p-3 items-center"
                 >
                   <Pressable
@@ -169,19 +339,16 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
                   </Pressable>
 
                   <Image
-                    source={item.image}
+                    source={{
+                      uri: getAssetUrl(item.image) || PRODUCT_PLACEHOLDER,
+                    }}
                     className="w-16 h-16 rounded-lg"
                     resizeMode="contain"
                   />
 
                   <View className="ml-4 flex-1">
                     <Text className="font-semibold text-sm">{item.name}</Text>
-                    <Text className="text-black font-medium">
-                      {typeof item.price === "number"
-                        ? // @ts-ignore
-                          item.price.toLocaleString()
-                        : item.price}
-                    </Text>
+                    <Text className="text-black font-medium">{item.price}</Text>
                     <View className="flex-row items-center mt-1">
                       <Pressable
                         onPress={() => updateQuantity(item.id, -1)}
@@ -269,6 +436,14 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation }) => {
           </View>
         </View>
       </SafeAreaView>
+
+      <PaymentOptionsModal
+        visible={showPaymentOptions}
+        onClose={() => setShowPaymentOptions(false)}
+        onSelectPaymentOption={handleSelectPaymentOption}
+      />
+      {renderPaymentInputModal()}
+      {renderSuccessModal()}
     </GradientLayout>
   );
 };

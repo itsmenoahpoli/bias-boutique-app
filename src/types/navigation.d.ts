@@ -23,6 +23,7 @@ export type TStackParamsList = {
   HELPCENTER_SCREEN: undefined;
   CHATASSISTANT_SCREEN: undefined;
   ACCOUNT_SETTINGS_SCREEN: undefined;
+  PRODUCT_COMPARE_SCREEN: undefined;
   VIEW_PRODUCT_DETAIL_SCREEN: {
     product: {
       id: number | string;
@@ -36,7 +37,9 @@ export type TStackParamsList = {
     category: string;
     searchQuery?: string;
   };
-  CART_SCREEN: undefined;
+  CART_SCREEN: {
+    autoCheckout?: boolean;
+  };
   CHECKOUT_WEBVIEW: {
     url: string;
   };

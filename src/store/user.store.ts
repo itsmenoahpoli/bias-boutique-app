@@ -8,6 +8,7 @@ type User = {
   username: string;
   contact_no: string;
   account_type: string;
+  address?: string;
 };
 
 type UserStore = {

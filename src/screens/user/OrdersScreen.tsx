@@ -14,6 +14,7 @@ import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useOrdersService } from "@/services/orders.service";
+import { useUserStore } from "@/store/user.store";
 
 type TScreenProps = {
   navigation: StackNavigationProp<TStackParamsList, "ORDERS_SCREEN">;
@@ -60,6 +61,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { fetchOrdersByCurrentUserEmail } = useOrdersService();
+  const { user } = useUserStore();
 
   // Get params from route if they exist
   const selectedOrderId = route.params?.selectedOrderId;
@@ -83,7 +85,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
         }
       }
     }
-  }, [selectedOrderId, orders]);
+  }, [selectedOrderId, orders, showDetails]);
 
   const fetchOrders = async () => {
     setIsLoading(true);
@@ -110,6 +112,17 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
       });
 
       setOrders(parsedOrders);
+
+      // If we have a selectedOrderId and showDetails is true, show the modal after fetching orders
+      if (selectedOrderId && showDetails) {
+        const order = parsedOrders.find(
+          (order: Order) => order.id === selectedOrderId
+        );
+        if (order) {
+          setSelectedOrder(order);
+          setModalVisible(true);
+        }
+      }
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     } finally {
@@ -254,6 +267,7 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
     const paymentType = selectedOrder.payment_type || "Unknown";
     const shipmentStatus = selectedOrder.shipment_status || "To Ship";
     const checkoutDate = selectedOrder.checkout_date || selectedOrder.createdAt;
+    const shippingAddress = user?.address || "Home";
 
     return (
       <Modal
@@ -350,6 +364,21 @@ export const OrdersScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
                   </Text>
                   <Text style={{ color: "white" }}>
                     {selectedOrder.customer_email}
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 4,
+                  }}
+                >
+                  <Text style={{ color: "rgba(255,255,255,0.8)" }}>
+                    Shipping Address:
+                  </Text>
+                  <Text style={{ color: "white", textAlign: "right", flex: 1 }}>
+                    {shippingAddress}
                   </Text>
                 </View>
 
