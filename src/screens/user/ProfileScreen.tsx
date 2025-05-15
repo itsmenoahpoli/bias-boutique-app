@@ -361,9 +361,31 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
           <Text className="text-white font-bold text-xl mt-2">
             {user?.name || "Guest"}
           </Text>
-          <Text className="text-white text-xs mt-1">
-            0 Wishlist | 0 Followers | 0 Following
-          </Text>
+          <View className="flex-row mt-1">
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("CART_SCREEN", { activeTab: "wishlist" })
+              }
+            >
+              <Text className="text-white text-xs">0 Wishlist</Text>
+            </TouchableOpacity>
+            <Text className="text-white text-xs"> | </Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("SOCIAL_SCREEN", { activeTab: "followers" })
+              }
+            >
+              <Text className="text-white text-xs">0 Followers</Text>
+            </TouchableOpacity>
+            <Text className="text-white text-xs"> | </Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("SOCIAL_SCREEN", { activeTab: "following" })
+              }
+            >
+              <Text className="text-white text-xs">0 Following</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Orders */}

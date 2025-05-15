@@ -52,7 +52,9 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<any>(null);
   const [paymentInput, setPaymentInput] = useState("");
-  const [activeTab, setActiveTab] = useState<"cart" | "wishlist">("cart");
+  const [activeTab, setActiveTab] = useState<"cart" | "wishlist">(
+    route.params?.activeTab || "cart"
+  );
 
   useEffect(() => {
     loadCart();

@@ -18,6 +18,9 @@ export type TStackParamsList = {
     selectedOrderId?: string;
     showDetails?: boolean;
   };
+  SOCIAL_SCREEN: {
+    activeTab?: "followers" | "following";
+  };
   WALLET_SCREEN: undefined;
   PROFILE_SCREEN: undefined;
   HELPCENTER_SCREEN: undefined;
@@ -39,6 +42,7 @@ export type TStackParamsList = {
   };
   CART_SCREEN: {
     autoCheckout?: boolean;
+    activeTab?: "cart" | "wishlist";
   };
   CHECKOUT_WEBVIEW: {
     url: string;
