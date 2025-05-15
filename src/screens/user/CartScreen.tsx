@@ -380,7 +380,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
         </View>
 
         <Pressable onPress={() => removeFromWishlist(item.id)} className="ml-2">
-          <Ionicons name="heart" size={20} color="#EF4444" />
+          <Ionicons name="close" size={20} color="#EF4444" />
         </Pressable>
       </View>
     ));

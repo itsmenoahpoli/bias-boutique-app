@@ -41,6 +41,22 @@ const menuList = [
   { label: "Chat Assistant AI", icon: "chatbubbles" },
 ];
 
+const voucherList = [
+  {
+    code: "WELCOME20",
+    discount: "20%",
+    validity: "2024-12-31",
+    minSpend: 1000,
+  },
+  {
+    code: "SUMMER50",
+    discount: "₱500",
+    validity: "2024-08-31",
+    minSpend: 2000,
+  },
+  { code: "FLASH25", discount: "25%", validity: "2024-06-30", minSpend: 1500 },
+];
+
 export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const logout = useUserStore((state) => state.logout);
   const user = useUserStore((state) => state.user);
@@ -49,6 +65,7 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
   const [isPaymentInputVisible, setIsPaymentInputVisible] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [isPhotoOptionsVisible, setIsPhotoOptionsVisible] = useState(false);
+  const [isVoucherModalVisible, setIsVoucherModalVisible] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [cashInAmount, setCashInAmount] = useState(0);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<any>(null);
@@ -324,6 +341,158 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
     );
   };
 
+  const renderVoucherModal = () => {
+    return (
+      <Modal
+        visible={isVoucherModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsVoucherModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#1F2937",
+              width: "90%",
+              height: "80%",
+              borderRadius: 12,
+              padding: 16,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <Text
+                style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
+              >
+                My Vouchers
+              </Text>
+              <TouchableOpacity onPress={() => setIsVoucherModalVisible(false)}>
+                <Ionicons name="close" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              style={{ flex: 1, height: "100%" }}
+              contentContainerStyle={{ paddingBottom: 10 }}
+            >
+              {voucherList.map((voucher, index) => (
+                <View
+                  key={index}
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    borderRadius: 12,
+                    padding: 12,
+                    marginBottom: 16,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: 18,
+                      }}
+                    >
+                      {voucher.code}
+                    </Text>
+                    <View
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 9999,
+                        backgroundColor: "rgba(34,197,94,0.5)",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 14,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {voucher.discount}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginBottom: 4,
+                    }}
+                  >
+                    <Text style={{ color: "rgba(255,255,255,0.8)" }}>
+                      Valid until:
+                    </Text>
+                    <Text style={{ color: "white" }}>{voucher.validity}</Text>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginBottom: 4,
+                    }}
+                  >
+                    <Text style={{ color: "rgba(255,255,255,0.8)" }}>
+                      Minimum spend:
+                    </Text>
+                    <Text style={{ color: "white" }}>
+                      ₱{voucher.minSpend.toLocaleString()}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#9333EA",
+                paddingVertical: 12,
+                borderRadius: 12,
+                marginTop: 12,
+              }}
+              onPress={() => setIsVoucherModalVisible(false)}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <GradientLayout>
       <ScrollView className="flex-1 px-4 py-6">
@@ -455,7 +624,9 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
               key={idx}
               className="flex-row items-center p-3 bg-white/10 rounded-xl"
               onPress={() => {
-                if (item.label === "Account Settings") {
+                if (item.label === "Voucher") {
+                  setIsVoucherModalVisible(true);
+                } else if (item.label === "Account Settings") {
                   navigation.navigate("ACCOUNT_SETTINGS_SCREEN");
                 } else if (item.label === "Help Center") {
                   navigation.navigate("HELPCENTER_SCREEN");
@@ -502,6 +673,9 @@ export const ProfileScreen: React.FC<TScreenProps> = ({ navigation }) => {
 
       {/* Photo Options Modal */}
       {renderPhotoOptionsModal()}
+
+      {/* Voucher Modal */}
+      {renderVoucherModal()}
     </GradientLayout>
   );
 };
