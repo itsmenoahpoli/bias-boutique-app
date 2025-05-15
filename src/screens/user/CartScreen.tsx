@@ -22,6 +22,7 @@ import { useWishlistStore } from "@/store/wishlist.store";
 import { useNavigation } from "@react-navigation/native";
 import { useOrdersService } from "@/services";
 import { useUserStore } from "@/store/user.store";
+import { useWalletStore } from "@/store/wallet.store";
 import { PaymentOptionsModal } from "@/components";
 import { PRODUCT_PLACEHOLDER } from "@/images";
 
@@ -47,6 +48,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const { user } = useUserStore();
+  const { balance, setBalance } = useWalletStore();
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [showPaymentInput, setShowPaymentInput] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -135,7 +137,42 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const handleSelectPaymentOption = async (option: any) => {
     setSelectedPaymentOption(option);
     setShowPaymentOptions(false);
-    setShowPaymentInput(true);
+
+    if (option.id === "wallet") {
+      // Process wallet payment directly
+      setIsCheckoutLoading(true);
+      try {
+        const selectedCartItems = cartItems.filter((item) =>
+          selectedItems.has(item.id)
+        );
+
+        const orderResponse = await ordersService.createOrder(
+          user?.email || "",
+          selectedCartItems
+        );
+
+        // Deduct from wallet balance
+        const newBalance = balance - calculateTotal();
+        await setBalance(newBalance);
+
+        setShowSuccessModal(true);
+        clearCart();
+
+        navigation.navigate("ORDERS_SCREEN", {
+          selectedOrderId: orderResponse.id,
+          showDetails: true,
+        });
+      } catch (error) {
+        Alert.alert(
+          "Checkout Error",
+          error instanceof Error ? error.message : "Failed to process checkout"
+        );
+      } finally {
+        setIsCheckoutLoading(false);
+      }
+    } else {
+      setShowPaymentInput(true);
+    }
   };
 
   const handlePaymentSubmit = async () => {
@@ -511,6 +548,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
         visible={showPaymentOptions}
         onClose={() => setShowPaymentOptions(false)}
         onSelectPaymentOption={handleSelectPaymentOption}
+        totalAmount={calculateTotal()}
       />
       {renderPaymentInputModal()}
       {renderSuccessModal()}

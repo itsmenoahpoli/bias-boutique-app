@@ -5,7 +5,7 @@ export type CartItem = {
   id: string; // Changed to string for MongoDB IDs
   name: string;
   price: string;
-  image: any;
+  image: string | null;
   quantity: number;
 };
 

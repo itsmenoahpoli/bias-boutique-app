@@ -82,7 +82,7 @@ export const ProductsScreen = ({ navigation, route }: Props) => {
         id: product.id,
         name: product.name,
         price: formatPrice(product.price),
-        image: PRODUCT_PLACEHOLDER,
+        image: product.image || PRODUCT_PLACEHOLDER,
       };
 
       await addToCart(cartItem);

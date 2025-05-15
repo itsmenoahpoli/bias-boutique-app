@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useWalletStore } from "@/store/wallet.store";
 
 type PaymentOption = {
   id: string;
@@ -28,16 +29,29 @@ type PaymentOptionsModalProps = {
   visible: boolean;
   onClose: () => void;
   onSelectPaymentOption: (option: PaymentOption) => void;
+  totalAmount?: number;
 };
 
 export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
   visible,
   onClose,
   onSelectPaymentOption,
+  totalAmount = 0,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>("e-wallet");
+  const [activeCategory, setActiveCategory] = useState<string>("wallet");
+  const { balance } = useWalletStore();
 
   const paymentCategories: PaymentCategory[] = [
+    {
+      title: "wallet",
+      options: [
+        {
+          id: "wallet",
+          name: "Wallet Balance",
+          description: `Available Balance: ₱${balance.toFixed(2)}`,
+        },
+      ],
+    },
     {
       title: "e-wallet",
       options: [
@@ -122,6 +136,8 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
 
   const getCategoryTitle = (key: string): string => {
     switch (key) {
+      case "wallet":
+        return "Wallet";
       case "e-wallet":
         return "E-Wallet";
       case "bank":
@@ -169,6 +185,15 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
               Supported available payment options
             </Text>
 
+            {totalAmount > 0 && (
+              <View className="bg-gray-100 p-3 rounded-lg mb-4">
+                <Text className="text-gray-700 font-medium">Total Amount:</Text>
+                <Text className="text-xl font-bold">
+                  ₱{totalAmount.toFixed(2)}
+                </Text>
+              </View>
+            )}
+
             {/* Category Tabs */}
             <ScrollView
               horizontal
@@ -211,8 +236,11 @@ export const PaymentOptionsModal: React.FC<PaymentOptionsModalProps> = ({
                     key={option.id}
                     className="flex-row items-center p-4 border border-gray-200 rounded-xl"
                     onPress={() => {
+                      if (option.id === "wallet" && balance < totalAmount) {
+                        alert("Insufficient wallet balance");
+                        return;
+                      }
                       onSelectPaymentOption(option);
-                      // onClose();
                     }}
                   >
                     <View className="ml-3 flex-1">
