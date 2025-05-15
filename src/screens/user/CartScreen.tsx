@@ -18,6 +18,7 @@ import { GradientLayout } from "@/components";
 import { TStackParamsList } from "@/types/navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "@/store/cart.store";
+import { useWishlistStore } from "@/store/wishlist.store";
 import { useNavigation } from "@react-navigation/native";
 import { useOrdersService } from "@/services";
 import { useUserStore } from "@/store/user.store";
@@ -31,12 +32,17 @@ type TScreenProps = {
 
 export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const {
-    items,
+    items: cartItems,
     loadCart,
     updateQuantity: updateCartQuantity,
     removeFromCart,
     clearCart,
   } = useCartStore();
+  const {
+    items: wishlistItems,
+    loadWishlist,
+    removeFromWishlist,
+  } = useWishlistStore();
   const ordersService = useOrdersService();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
@@ -46,16 +52,18 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<any>(null);
   const [paymentInput, setPaymentInput] = useState("");
+  const [activeTab, setActiveTab] = useState<"cart" | "wishlist">("cart");
 
   useEffect(() => {
     loadCart();
+    loadWishlist();
   }, []);
 
   useEffect(() => {
-    if (route.params?.autoCheckout && items.length > 0) {
-      setSelectedItems(new Set(items.map((item) => item.id)));
+    if (route.params?.autoCheckout && cartItems.length > 0) {
+      setSelectedItems(new Set(cartItems.map((item) => item.id)));
     }
-  }, [route.params?.autoCheckout, items]);
+  }, [route.params?.autoCheckout, cartItems]);
 
   const toggleSelect = (id: string) => {
     setSelectedItems((prev) => {
@@ -70,7 +78,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   };
 
   const updateQuantity = async (id: string, delta: number) => {
-    const item = items.find((item) => item.id === id);
+    const item = cartItems.find((item) => item.id === id);
     if (item) {
       const newQuantity = Math.max(1, item.quantity + delta);
       await updateCartQuantity(id, newQuantity);
@@ -78,15 +86,15 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   };
 
   const toggleSelectAll = () => {
-    if (selectedItems.size === items.length) {
+    if (selectedItems.size === cartItems.length) {
       setSelectedItems(new Set());
     } else {
-      setSelectedItems(new Set(items.map((item) => item.id)));
+      setSelectedItems(new Set(cartItems.map((item) => item.id)));
     }
   };
 
   const calculateTotal = (): number => {
-    return items
+    return cartItems
       .filter((item) => selectedItems.has(item.id))
       .reduce((sum, item) => {
         let numericPrice: number;
@@ -102,7 +110,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
   const handleCheckout = async () => {
     setIsCheckoutLoading(true);
     try {
-      const selectedCartItems = items.filter((item) =>
+      const selectedCartItems = cartItems.filter((item) =>
         selectedItems.has(item.id)
       );
 
@@ -136,7 +144,7 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
 
     setIsCheckoutLoading(true);
     try {
-      const selectedCartItems = items.filter((item) =>
+      const selectedCartItems = cartItems.filter((item) =>
         selectedItems.has(item.id)
       );
 
@@ -149,7 +157,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
       setShowSuccessModal(true);
       clearCart();
 
-      // Navigate to OrdersScreen with the created order's ID
       navigation.navigate("ORDERS_SCREEN", {
         selectedOrderId: orderResponse.id,
         showDetails: true,
@@ -166,7 +173,6 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
 
   const getAssetUrl = (image: string | null) => {
     if (!image) return PRODUCT_PLACEHOLDER;
-
     return "https://bias-boutique-backend-production.up.railway.app" + image;
   };
 
@@ -282,6 +288,102 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
     );
   };
 
+  const renderCartItems = () => {
+    if (cartItems.length === 0) {
+      return (
+        <View className="items-center justify-center flex-1 mt-20">
+          <Text className="text-white text-center text-lg">
+            Your cart is empty 🛒
+          </Text>
+        </View>
+      );
+    }
+
+    return cartItems.map((item, index) => (
+      <View
+        key={`${item.id}-${index}`}
+        className="flex-row bg-white/90 rounded-xl p-3 items-center"
+      >
+        <Pressable
+          onPress={() => toggleSelect(item.id)}
+          className="w-5 h-5 border border-gray-400 rounded mr-2 items-center justify-center"
+        >
+          {selectedItems.has(item.id) && (
+            <View className="w-3 h-3 bg-blue-600 rounded" />
+          )}
+        </Pressable>
+
+        <Image
+          source={{
+            uri: getAssetUrl(item.image) || PRODUCT_PLACEHOLDER,
+          }}
+          className="w-16 h-16 rounded-lg"
+          resizeMode="contain"
+        />
+
+        <View className="ml-4 flex-1">
+          <Text className="font-semibold text-sm">{item.name}</Text>
+          <Text className="text-black font-medium">{item.price}</Text>
+          <View className="flex-row items-center mt-1">
+            <Pressable
+              onPress={() => updateQuantity(item.id, -1)}
+              className="px-2 py-1 bg-gray-200 rounded"
+            >
+              <Text className="font-bold">−</Text>
+            </Pressable>
+            <Text className="mx-2">{item.quantity}</Text>
+            <Pressable
+              onPress={() => updateQuantity(item.id, 1)}
+              className="px-2 py-1 bg-gray-200 rounded"
+            >
+              <Text className="font-bold">+</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        <Pressable onPress={() => removeFromCart(item.id)} className="ml-2">
+          <Ionicons name="trash-outline" size={20} color="#EF4444" />
+        </Pressable>
+      </View>
+    ));
+  };
+
+  const renderWishlistItems = () => {
+    if (wishlistItems.length === 0) {
+      return (
+        <View className="items-center justify-center flex-1 mt-20">
+          <Text className="text-white text-center text-lg">
+            Your wishlist is empty 💫
+          </Text>
+        </View>
+      );
+    }
+
+    return wishlistItems.map((item, index) => (
+      <View
+        key={`${item.id}-${index}`}
+        className="flex-row bg-white/90 rounded-xl p-3 items-center"
+      >
+        <Image
+          source={{
+            uri: getAssetUrl(item.image) || PRODUCT_PLACEHOLDER,
+          }}
+          className="w-16 h-16 rounded-lg"
+          resizeMode="contain"
+        />
+
+        <View className="ml-4 flex-1">
+          <Text className="font-semibold text-sm">{item.name}</Text>
+          <Text className="text-black font-medium">{item.price}</Text>
+        </View>
+
+        <Pressable onPress={() => removeFromWishlist(item.id)} className="ml-2">
+          <Ionicons name="heart" size={20} color="#EF4444" />
+        </Pressable>
+      </View>
+    ));
+  };
+
   return (
     <GradientLayout>
       <SafeAreaView className="flex-1">
@@ -298,9 +400,33 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
                 <Ionicons name="arrow-back" size={20} color="white" />
               </Pressable>
               <Text className="text-white font-semibold text-lg">
-                Shopping Cart ({items.length})
+                {activeTab === "cart" ? "Shopping Cart" : "Wishlist"}
               </Text>
               <Text>&nbsp;</Text>
+            </View>
+
+            {/* Tabs */}
+            <View className="flex-row px-4 mb-4">
+              <Pressable
+                onPress={() => setActiveTab("cart")}
+                className={`flex-1 py-2 rounded-l-lg ${
+                  activeTab === "cart" ? "bg-white/20" : "bg-white/10"
+                }`}
+              >
+                <Text className="text-white text-center font-medium">
+                  Cart ({cartItems.length})
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setActiveTab("wishlist")}
+                className={`flex-1 py-2 rounded-r-lg ${
+                  activeTab === "wishlist" ? "bg-white/20" : "bg-white/10"
+                }`}
+              >
+                <Text className="text-white text-center font-medium">
+                  Wishlist ({wishlistItems.length})
+                </Text>
+              </Pressable>
             </View>
           </View>
 
@@ -313,123 +439,69 @@ export const CartScreen: React.FC<TScreenProps> = ({ navigation, route }) => {
               paddingBottom: 20,
             }}
           >
-            {items.length === 0 ? (
-              <View className="items-center justify-center flex-1 mt-20">
-                <Text className="text-white text-center text-lg">
-                  Your cart is empty 🛒
-                </Text>
-              </View>
-            ) : (
-              items.map((item, index) => (
-                <View
-                  key={`${item.id}-${index}`}
-                  className="flex-row bg-white/90 rounded-xl p-3 items-center"
-                >
-                  <Pressable
-                    onPress={() => toggleSelect(item.id)}
-                    className="w-5 h-5 border border-gray-400 rounded mr-2 items-center justify-center"
-                  >
-                    {selectedItems.has(item.id) && (
-                      <View className="w-3 h-3 bg-blue-600 rounded" />
-                    )}
-                  </Pressable>
-
-                  <Image
-                    source={{
-                      uri: getAssetUrl(item.image) || PRODUCT_PLACEHOLDER,
-                    }}
-                    className="w-16 h-16 rounded-lg"
-                    resizeMode="contain"
-                  />
-
-                  <View className="ml-4 flex-1">
-                    <Text className="font-semibold text-sm">{item.name}</Text>
-                    <Text className="text-black font-medium">{item.price}</Text>
-                    <View className="flex-row items-center mt-1">
-                      <Pressable
-                        onPress={() => updateQuantity(item.id, -1)}
-                        className="px-2 py-1 bg-gray-200 rounded"
-                      >
-                        <Text className="font-bold">−</Text>
-                      </Pressable>
-                      <Text className="mx-2">{item.quantity}</Text>
-                      <Pressable
-                        onPress={() => updateQuantity(item.id, 1)}
-                        className="px-2 py-1 bg-gray-200 rounded"
-                      >
-                        <Text className="font-bold">+</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-
-                  <Pressable
-                    onPress={() => removeFromCart(item.id)}
-                    className="ml-2"
-                  >
-                    <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                  </Pressable>
-                </View>
-              ))
-            )}
+            {activeTab === "cart" ? renderCartItems() : renderWishlistItems()}
           </ScrollView>
 
           {/* Footer */}
-          <View className="p-2 bg-white/10 backdrop-blur-lg border-t border-white/20">
-            {/* Voucher Section */}
-            <View className="flex-row items-center mb-2 bg-white/5 px-3 py-1 rounded-lg">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="ticket-outline" size={16} color="white" />
-                <Text className="text-white text-sm ml-2">
-                  Platform Voucher
-                </Text>
-              </View>
-              <TextInput
-                placeholder="Enter code"
-                placeholderTextColor="rgba(255,255,255,0.5)"
-                className="bg-white/10 px-3 py-1 rounded-lg w-28 text-sm text-white"
-              />
-            </View>
-
-            {/* Select All and Checkout Section */}
-            <View className="flex-row items-center justify-between bg-white/5 px-3 py-2 rounded-xl">
-              <View className="flex-row items-center">
-                <Pressable
-                  onPress={toggleSelectAll}
-                  className="w-5 h-5 border-2 border-white/30 rounded mr-2 items-center justify-center"
-                >
-                  {items.length > 0 && selectedItems.size === items.length && (
-                    <View className="w-3 h-3 bg-purple-500 rounded" />
-                  )}
-                </Pressable>
-                <View>
-                  <Text className="text-white text-sm">Select All</Text>
-                  <Text className="text-white font-bold text-base">
-                    ₱{calculateTotal().toLocaleString("en-PH")}
+          {activeTab === "cart" && (
+            <View className="p-2 bg-white/10 backdrop-blur-lg border-t border-white/20">
+              {/* Voucher Section */}
+              <View className="flex-row items-center mb-2 bg-white/5 px-3 py-1 rounded-lg">
+                <View className="flex-row items-center flex-1">
+                  <Ionicons name="ticket-outline" size={16} color="white" />
+                  <Text className="text-white text-sm ml-2">
+                    Platform Voucher
                   </Text>
                 </View>
+                <TextInput
+                  placeholder="Enter code"
+                  placeholderTextColor="rgba(255,255,255,0.5)"
+                  className="bg-white/10 px-3 py-1 rounded-lg w-28 text-sm text-white"
+                />
               </View>
 
-              <Pressable
-                onPress={handleCheckout}
-                disabled={isCheckoutLoading}
-                className="bg-gradient-to-r from-purple-900 to-blue-900 px-6 py-3 rounded-lg transform scale-105"
-                style={{
-                  shadowColor: "#8B5CF6",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 5,
-                  elevation: 4,
-                  opacity: isCheckoutLoading ? 0.7 : 1,
-                }}
-              >
-                <Text className="bg-white text-purple-900 font-bold text-base tracking-wide rounded-lg p-2">
-                  {isCheckoutLoading
-                    ? "Processing..."
-                    : `Checkout (${selectedItems.size})`}
-                </Text>
-              </Pressable>
+              {/* Select All and Checkout Section */}
+              <View className="flex-row items-center justify-between bg-white/5 px-3 py-2 rounded-xl">
+                <View className="flex-row items-center">
+                  <Pressable
+                    onPress={toggleSelectAll}
+                    className="w-5 h-5 border-2 border-white/30 rounded mr-2 items-center justify-center"
+                  >
+                    {cartItems.length > 0 &&
+                      selectedItems.size === cartItems.length && (
+                        <View className="w-3 h-3 bg-purple-500 rounded" />
+                      )}
+                  </Pressable>
+                  <View>
+                    <Text className="text-white text-sm">Select All</Text>
+                    <Text className="text-white font-bold text-base">
+                      ₱{calculateTotal().toLocaleString("en-PH")}
+                    </Text>
+                  </View>
+                </View>
+
+                <Pressable
+                  onPress={handleCheckout}
+                  disabled={isCheckoutLoading}
+                  className="bg-gradient-to-r from-purple-900 to-blue-900 px-6 py-3 rounded-lg transform scale-105"
+                  style={{
+                    shadowColor: "#8B5CF6",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 5,
+                    elevation: 4,
+                    opacity: isCheckoutLoading ? 0.7 : 1,
+                  }}
+                >
+                  <Text className="bg-white text-purple-900 font-bold text-base tracking-wide rounded-lg p-2">
+                    {isCheckoutLoading
+                      ? "Processing..."
+                      : `Checkout (${selectedItems.size})`}
+                  </Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
+          )}
         </View>
       </SafeAreaView>
 
