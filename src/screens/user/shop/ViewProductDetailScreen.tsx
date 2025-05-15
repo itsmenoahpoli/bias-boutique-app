@@ -12,9 +12,16 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GradientLayout } from "@/components";
 import { type TStackParamsList } from "@/types/navigation";
-import { ArrowLeft, MessageCircle, Share2, Star } from "lucide-react-native";
+import {
+  ArrowLeft,
+  MessageCircle,
+  Share2,
+  Star,
+  Heart,
+} from "lucide-react-native";
 import { $baseApi } from "@/api";
 import { useCartStore } from "@/store/cart.store";
+import { useWishlistStore } from "@/store/wishlist.store";
 import { PRODUCT_PLACEHOLDER } from "@/images";
 import { useOrdersService } from "@/services/orders.service";
 import { useUserStore } from "@/store/user.store";
@@ -51,13 +58,51 @@ export const ViewProductDetailScreen: React.FC<TScreenProps> = ({
     product as ProductDetails
   );
   const { addToCart } = useCartStore();
+  const {
+    addToWishlist,
+    removeFromWishlist,
+    items: wishlistItems,
+  } = useWishlistStore();
   const { createOrder } = useOrdersService();
   const { user } = useUserStore();
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
   useEffect(() => {
     fetchProductDetails();
+    checkWishlistStatus();
   }, []);
+
+  const checkWishlistStatus = () => {
+    const exists = wishlistItems.some((item) => item.id === product.id);
+    setIsInWishlist(exists);
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!user?.email) {
+      Alert.alert("Error", "Please login to add items to wishlist");
+      return;
+    }
+
+    try {
+      if (isInWishlist) {
+        await removeFromWishlist(productDetails.id);
+        Alert.alert("Success", "Product removed from wishlist");
+      } else {
+        const wishlistItem = {
+          id: productDetails.id,
+          name: productDetails.name,
+          price: `₱${productDetails.price}`,
+          image: productDetails.image || PRODUCT_PLACEHOLDER,
+        };
+        await addToWishlist(wishlistItem);
+        Alert.alert("Success", "Product added to wishlist");
+      }
+      setIsInWishlist(!isInWishlist);
+    } catch (error) {
+      Alert.alert("Error", "Failed to update wishlist");
+    }
+  };
 
   const fetchProductDetails = async () => {
     try {
@@ -189,10 +234,20 @@ export const ViewProductDetailScreen: React.FC<TScreenProps> = ({
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="border border-pink-600 rounded-full px-4 py-2"
+              className="border border-pink-600 rounded-full px-4 py-2 mr-2"
               onPress={handleAddToCart}
             >
               <Text className="text-pink-600 font-semibold">Add to Cart</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="border border-pink-600 rounded-full p-2"
+              onPress={handleWishlistToggle}
+            >
+              <Heart
+                size={20}
+                color="#DB2777"
+                fill={isInWishlist ? "#DB2777" : "none"}
+              />
             </TouchableOpacity>
           </View>
         </View>
